@@ -30,7 +30,42 @@ const TableCell = styled.td`
   border: 1px solid #ddd;
 `;
 
+const calculatePercentage = (value, total) => {
+  if (total === 0) return '0%';
+  return `${((value / total) * 100).toFixed(2)}%`;
+};
+
 const Statistics = ({ teams, statistics }) => {
+  const serviceEffectivenessA = calculatePercentage(
+    statistics.teamA.ace + statistics.teamB.receptionError,
+    statistics.teamA.serve
+  );
+
+  const serviceEffectivenessB = calculatePercentage(
+    statistics.teamB.ace + statistics.teamA.receptionError,
+    statistics.teamB.serve
+  );
+
+  const attackEffectivenessA = calculatePercentage(
+    statistics.teamA.attackPoint + statistics.teamB.digError,
+    statistics.teamA.attack
+  );
+
+  const attackEffectivenessB = calculatePercentage(
+    statistics.teamB.attackPoint + statistics.teamA.digError,
+    statistics.teamB.attack
+  );
+
+  const defenseEffectivenessA = calculatePercentage(
+    statistics.teamA.dig - statistics.teamA.digError,
+    statistics.teamB.attack
+  );
+
+  const defenseEffectivenessB = calculatePercentage(
+    statistics.teamB.dig - statistics.teamB.digError,
+    statistics.teamA.attack
+  );
+
   return (
     <StatisticsContainer>
       <Table>
@@ -108,9 +143,24 @@ const Statistics = ({ teams, statistics }) => {
             <TableCell>{statistics.teamB.blockOut}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Faults</TableCell> {/* New stat */}
+            <TableCell>Faults</TableCell>
             <TableCell>{statistics.teamA.fault}</TableCell>
             <TableCell>{statistics.teamB.fault}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Service Effectiveness</TableCell> {/* New calculated stat */}
+            <TableCell>{serviceEffectivenessA}</TableCell>
+            <TableCell>{serviceEffectivenessB}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Attack Effectiveness</TableCell> {/* New calculated stat */}
+            <TableCell>{attackEffectivenessA}</TableCell>
+            <TableCell>{attackEffectivenessB}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Defense Effectiveness</TableCell> {/* New calculated stat */}
+            <TableCell>{defenseEffectivenessA}</TableCell>
+            <TableCell>{defenseEffectivenessB}</TableCell>
           </TableRow>
         </tbody>
       </Table>

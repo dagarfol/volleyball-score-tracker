@@ -112,6 +112,9 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         break;
       case 'dig':
         newStatsUpdate[opposingTeam].dig += 1;
+        if (rallyStage === 'afterBlock') {
+          newStatsUpdate[team].attack +=1;
+        }
         setCurrentPossession(opposingTeam);
         updateBallPossession(opposingTeam);
         setRallyStage('afterDig');
