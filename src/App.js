@@ -14,8 +14,9 @@ const AppContainer = styled.div`
 `;
 
 function App() {
-  const [teams, setTeams] = useState({ teamA: '', teamB: '' });
+  const [teams, setTeams] = useState({ teamA: 'Team A', teamB: 'Team B' });
   const [currentServer, setCurrentServer] = useState(null);
+  const [initialServer, setInitialServer] = useState(null); // Track the initial server for each set
   const [scores, setScores] = useState({ teamA: 0, teamB: 0 });
   const [setsWon, setSetsWon] = useState({ teamA: 0, teamB: 0 });
   const [statistics, setStatistics] = useState({
@@ -33,7 +34,7 @@ function App() {
       block: 0,
       blockPoint: 0,
       blockOut: 0,
-      fault: 0, // Initialize fault
+      fault: 0,
     },
     teamB: {
       serve: 0,
@@ -49,11 +50,12 @@ function App() {
       block: 0,
       blockPoint: 0,
       blockOut: 0,
-      fault: 0, // Initialize fault
+      fault: 0,
     },
   });
   const [ballPossession, setBallPossession] = useState(null);
   const [matchStarted, setMatchStarted] = useState(false);
+  const [maxSets, setMaxSets] = useState(5); // Default to 5 sets
 
   const handleTeamNames = (teamA, teamB) => {
     setTeams({ teamA, teamB });
@@ -61,6 +63,7 @@ function App() {
 
   const handleStartMatch = (server) => {
     setCurrentServer(server);
+    setInitialServer(server); // Set initial server for the first set
     setBallPossession(server);
     setMatchStarted(true); // Mark the match as started
   };
@@ -91,7 +94,7 @@ function App() {
         block: prevStats.teamA.block + (statsUpdate.teamA.block || 0),
         blockPoint: prevStats.teamA.blockPoint + (statsUpdate.teamA.blockPoint || 0),
         blockOut: prevStats.teamA.blockOut + (statsUpdate.teamA.blockOut || 0),
-        fault: prevStats.teamA.fault + (statsUpdate.teamA.fault || 0), // Update fault
+        fault: prevStats.teamA.fault + (statsUpdate.teamA.fault || 0),
       },
       teamB: {
         serve: prevStats.teamB.serve + (statsUpdate.teamB.serve || 0),
@@ -107,7 +110,7 @@ function App() {
         block: prevStats.teamB.block + (statsUpdate.teamB.block || 0),
         blockPoint: prevStats.teamB.blockPoint + (statsUpdate.teamB.blockPoint || 0),
         blockOut: prevStats.teamB.blockOut + (statsUpdate.teamB.blockOut || 0),
-        fault: prevStats.teamB.fault + (statsUpdate.teamB.fault || 0), // Update fault
+        fault: prevStats.teamB.fault + (statsUpdate.teamB.fault || 0),
       },
     }));
 
@@ -121,22 +124,27 @@ function App() {
     const scoreDifference = Math.abs(updatedScores.teamA - updatedScores.teamB);
 
     if (updatedScores.teamA >= 25 && scoreDifference >= 2) {
-      setSetsWon((prevSets) => ({ ...prevSets, teamA: prevSets.teamA + 1 }));
+      setSetsWon((prevSets) => {
+        const updatedSets = { ...prevSets, teamA: prevSets.teamA + 1 };
+        checkMatchWin(updatedSets); // Check match win after updating sets
+        return updatedSets;
+      });
       resetScores();
     } else if (updatedScores.teamB >= 25 && scoreDifference >= 2) {
-      setSetsWon((prevSets) => ({ ...prevSets, teamB: prevSets.teamB + 1 }));
+      setSetsWon((prevSets) => {
+        const updatedSets = { ...prevSets, teamB: prevSets.teamB + 1 };
+        checkMatchWin(updatedSets); // Check match win after updating sets
+        return updatedSets;
+      });
       resetScores();
     }
-
-    checkMatchWin();
   };
 
-  const checkMatchWin = () => {
-    const maxSets = 5; // Change this to 3 if needed
-    if (setsWon.teamA === Math.ceil(maxSets / 2)) {
+  const checkMatchWin = (updatedSets) => {
+    if (updatedSets.teamA === Math.ceil(maxSets / 2)) {
       alert(`${teams.teamA} wins the match!`);
       resetMatch();
-    } else if (setsWon.teamB === Math.ceil(maxSets / 2)) {
+    } else if (updatedSets.teamB === Math.ceil(maxSets / 2)) {
       alert(`${teams.teamB} wins the match!`);
       resetMatch();
     }
@@ -144,7 +152,11 @@ function App() {
 
   const resetScores = () => {
     setScores({ teamA: 0, teamB: 0 });
-    setBallPossession(currentServer);
+    // Switch the initial server for the new set
+    const newInitialServer = initialServer === 'teamA' ? 'teamB' : 'teamA';
+    setInitialServer(newInitialServer);
+    setCurrentServer(newInitialServer);
+    setBallPossession(newInitialServer);
   };
 
   const resetMatch = () => {
@@ -155,8 +167,21 @@ function App() {
     setMatchStarted(false);
   };
 
+  const handleSetSelection = (event) => {
+    setMaxSets(parseInt(event.target.value, 10));
+  };
+
   return (
     <AppContainer>
+      {!matchStarted && (
+        <div>
+          <label htmlFor="setSelection">Select Number of Sets:</label>
+          <select id="setSelection" onChange={handleSetSelection} value={maxSets}>
+            <option value={3}>3</option>
+            <option value={5}>5</option>
+          </select>
+        </div>
+      )}
       <ScoreBoard
         teams={teams}
         scores={scores}

@@ -342,7 +342,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
       <UndoContainer>
         <PreviousActionText>{renderPreviousActionText()}</PreviousActionText>
         <ActionButton onClick={handleUndo} disabled={actionHistory.length === 0}>Go Back</ActionButton>
-        <ActionButton onClick={handleDiscardRally}>Discard Rally</ActionButton>
+        <ActionButton onClick={handleDiscardRally} disabled={!currentServer}>Discard Rally</ActionButton>
       </UndoContainer>
       <FaultButtons teams={teams} currentServer={currentServer} handleAction={handleAction} />
       <ActionButtons
