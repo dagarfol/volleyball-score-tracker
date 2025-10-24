@@ -120,7 +120,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
     }
   }, [ballPossession]);
 
-  const handleAction = (action) => {
+  const handleAction = (action, faultingTeam = null) => {
     const team = currentPossession;
     const opposingTeam = team === 'teamA' ? 'teamB' : 'teamA';
     let newStatsUpdate = { ...statsUpdate };
@@ -175,11 +175,12 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         setActionHistory([...actionHistory, { action, team, rallyStage }]);
         break;
       case 'fault':
-        // Award point and possession to the opposing team
-        setCurrentPossession(opposingTeam);
-        updateBallPossession(opposingTeam); // Update possession
+        // Handle fault independently of current possession
+        const teamAwarded = faultingTeam === 'teamA' ? 'teamB' : 'teamA';
+        setCurrentPossession(teamAwarded);
+        updateBallPossession(teamAwarded); // Update possession
         setShowConfirmation(true);
-        setActionHistory([...actionHistory, { action, team, rallyStage }]);
+        setActionHistory([...actionHistory, { action, team: teamAwarded, rallyStage, previousPossession: currentPossession }]);
         break;
       case 'point':
         if (rallyStage === 'afterServe') {
@@ -201,7 +202,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
     if (actionHistory.length === 0) return;
 
     const lastAction = actionHistory[actionHistory.length - 1];
-    const { action, team, rallyStage: previousStage } = lastAction;
+    const { action, team, rallyStage: previousStage, previousPossession } = lastAction;
     const opposingTeam = team === 'teamA' ? 'teamB' : 'teamA';
     let newStatsUpdate = { ...statsUpdate };
 
@@ -239,8 +240,9 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         updateBallPossession(opposingTeam);
         break;
       case 'fault':
-        setCurrentPossession(opposingTeam);
-        updateBallPossession(opposingTeam);
+        // Revert possession to the team that had it before the fault
+        setCurrentPossession(previousPossession);
+        updateBallPossession(previousPossession);
         break;
       case 'point':
         if (previousStage === 'afterServe') {
@@ -426,10 +428,10 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
       </UndoContainer>
       <FaultButtonsContainer>
         <TeamFaultButton>
-          <ActionButton onClick={() => handleAction('fault')} disabled={!currentServer}>Fault {teams.teamA}</ActionButton>
+          <ActionButton onClick={() => handleAction('fault', 'teamA')} disabled={!currentServer}>Fault {teams.teamA}</ActionButton>
         </TeamFaultButton>
         <TeamFaultButton>
-          <ActionButton onClick={() => handleAction('fault')} disabled={!currentServer}>Fault {teams.teamB}</ActionButton>
+          <ActionButton onClick={() => handleAction('fault', 'teamB')} disabled={!currentServer}>Fault {teams.teamB}</ActionButton>
         </TeamFaultButton>
       </FaultButtonsContainer>
       <ActionButtonsContainer>
