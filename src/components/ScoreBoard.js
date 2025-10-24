@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const ScoreBoardContainer = styled.div`
@@ -7,11 +7,6 @@ const ScoreBoardContainer = styled.div`
   align-items: center;
   width: 100%;
   margin-bottom: 20px;
-`;
-
-const TeamInput = styled.input`
-  margin: 5px;
-  padding: 5px;
 `;
 
 const TeamButton = styled.button`
@@ -67,31 +62,9 @@ const ServingIndicator = styled.div`
   border-radius: 50%;
 `;
 
-function ScoreBoard({ teams, scores, setsWon, currentServer, ballPossession, onStartMatch, onSetTeamNames, matchStarted }) {
-  const [teamAName, setTeamAName] = useState('');
-  const [teamBName, setTeamBName] = useState('');
-
-  const handleSetNames = () => {
-    onSetTeamNames(teamAName, teamBName);
-  };
-
+function ScoreBoard({ teams, scores, setsWon, currentServer, ballPossession, onStartMatch, matchStarted }) {
   return (
     <ScoreBoardContainer>
-      <div>
-        <TeamInput
-          type="text"
-          placeholder="Team A Name"
-          value={teamAName}
-          onChange={(e) => setTeamAName(e.target.value)}
-        />
-        <TeamInput
-          type="text"
-          placeholder="Team B Name"
-          value={teamBName}
-          onChange={(e) => setTeamBName(e.target.value)}
-        />
-        <TeamButton onClick={handleSetNames}>Set Team Names</TeamButton>
-      </div>
       <div>
         <TeamButton onClick={() => onStartMatch('teamA')} disabled={matchStarted}>Team A Serves</TeamButton>
         <TeamButton onClick={() => onStartMatch('teamB')} disabled={matchStarted}>Team B Serves</TeamButton>
