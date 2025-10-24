@@ -122,15 +122,17 @@ function App() {
 
   const checkSetWin = (updatedScores) => {
     const scoreDifference = Math.abs(updatedScores.teamA - updatedScores.teamB);
+    const isTiebreakerSet = setsWon.teamA + setsWon.teamB === maxSets - 1;
+    const requiredPoints = isTiebreakerSet ? 15 : 25;
 
-    if (updatedScores.teamA >= 25 && scoreDifference >= 2) {
+    if (updatedScores.teamA >= requiredPoints && scoreDifference >= 2) {
       setSetsWon((prevSets) => {
         const updatedSets = { ...prevSets, teamA: prevSets.teamA + 1 };
         checkMatchWin(updatedSets); // Check match win after updating sets
         return updatedSets;
       });
       resetScores();
-    } else if (updatedScores.teamB >= 25 && scoreDifference >= 2) {
+    } else if (updatedScores.teamB >= requiredPoints && scoreDifference >= 2) {
       setSetsWon((prevSets) => {
         const updatedSets = { ...prevSets, teamB: prevSets.teamB + 1 };
         checkMatchWin(updatedSets); // Check match win after updating sets
