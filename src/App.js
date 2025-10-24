@@ -55,6 +55,10 @@ function App() {
     setBallPossession(server); // Set initial ball possession to the starting server
   };
 
+  const updateBallPossession = (newPossession) => {
+    setBallPossession(newPossession);
+  };
+
   const handleRallyEnd = (winner, statsUpdate) => {
     // Update scores first
     const newScores = {
@@ -91,7 +95,7 @@ function App() {
       },
     }));
 
-    // Update the server for the next rally
+    // Update the server and ball possession for the next rally
     setCurrentServer(winner);
     setBallPossession(winner);
 
@@ -143,6 +147,8 @@ function App() {
         teams={teams}
         scores={scores}
         setsWon={setsWon}
+        currentServer={currentServer}
+        ballPossession={ballPossession}
         onStartMatch={handleStartMatch}
         onSetTeamNames={handleTeamNames}
       />
@@ -151,6 +157,7 @@ function App() {
         currentServer={currentServer}
         ballPossession={ballPossession}
         onRallyEnd={handleRallyEnd}
+        updateBallPossession={updateBallPossession} // Pass the function to update possession
       />
       <Statistics teams={teams} statistics={statistics} />
     </AppContainer>

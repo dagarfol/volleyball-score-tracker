@@ -32,6 +32,8 @@ const TeamScoreA = styled.div`
   color: white;
   padding: 10px;
   border-radius: 8px;
+  position: relative;
+  border: ${({ isPossession }) => (isPossession ? '3px solid #32CD32' : 'none')}; /* Green border for possession */
 `;
 
 const TeamScoreB = styled.div`
@@ -41,6 +43,8 @@ const TeamScoreB = styled.div`
   color: white;
   padding: 10px;
   border-radius: 8px;
+  position: relative;
+  border: ${({ isPossession }) => (isPossession ? '3px solid #32CD32' : 'none')}; /* Green border for possession */
 `;
 
 const ScoreNumber = styled.p`
@@ -53,7 +57,17 @@ const SetsWon = styled.p`
   margin: 0;
 `;
 
-function ScoreBoard({ teams, scores, setsWon, onStartMatch, onSetTeamNames }) {
+const ServingIndicator = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 15px;
+  height: 15px;
+  background-color: #FFD700; /* Gold for serving */
+  border-radius: 50%;
+`;
+
+function ScoreBoard({ teams, scores, setsWon, currentServer, ballPossession, onStartMatch, onSetTeamNames }) {
   const [teamAName, setTeamAName] = useState('');
   const [teamBName, setTeamBName] = useState('');
 
@@ -83,15 +97,17 @@ function ScoreBoard({ teams, scores, setsWon, onStartMatch, onSetTeamNames }) {
         <TeamButton onClick={() => onStartMatch('teamB')}>Team B Serves</TeamButton>
       </div>
       <ScoresContainer>
-        <TeamScoreA>
+        <TeamScoreA isPossession={ballPossession === 'teamA'}>
           <h2>{teams.teamA}</h2>
           <ScoreNumber>{scores.teamA}</ScoreNumber>
           <SetsWon>Sets Won: {setsWon.teamA}</SetsWon>
+          {currentServer === 'teamA' && <ServingIndicator />}
         </TeamScoreA>
-        <TeamScoreB>
+        <TeamScoreB isPossession={ballPossession === 'teamB'}>
           <h2>{teams.teamB}</h2>
           <ScoreNumber>{scores.teamB}</ScoreNumber>
           <SetsWon>Sets Won: {setsWon.teamB}</SetsWon>
+          {currentServer === 'teamB' && <ServingIndicator />}
         </TeamScoreB>
       </ScoresContainer>
     </ScoreBoardContainer>

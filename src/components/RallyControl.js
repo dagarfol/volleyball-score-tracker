@@ -4,6 +4,7 @@ import styled from 'styled-components';
 const RallyControlContainer = styled.div`
   width: 100%;
   margin-top: 20px;
+  position: relative;
 `;
 
 const ActionButton = styled.button`
@@ -45,14 +46,27 @@ const RightButton = styled.div`
   justify-content: flex-end;
 `;
 
-const ServingIndicator = styled.div`
-  text-align: center;
-  font-weight: bold;
-  color: #007BFF; /* Blue color for serving indicator */
-  margin-bottom: 10px;
+const Overlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
 `;
 
-function RallyControl({ teams, currentServer, ballPossession, onRallyEnd }) {
+const ConfirmationContainer = styled.div`
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+`;
+
+function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, updateBallPossession }) {
   const [rallyStage, setRallyStage] = useState('start');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [currentPossession, setCurrentPossession] = useState(ballPossession);
@@ -100,6 +114,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd }) {
       case 'reception':
         newStatsUpdate[opposingTeam].reception += 1;
         setCurrentPossession(opposingTeam);
+        updateBallPossession(opposingTeam); // Update possession
         setRallyStage('afterReception');
         break;
       case 'attack':
@@ -109,6 +124,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd }) {
       case 'block':
         newStatsUpdate[opposingTeam].block += 1;
         setCurrentPossession(opposingTeam);
+        updateBallPossession(opposingTeam); // Update possession
         setRallyStage('afterBlock');
         break;
       case 'continue':
@@ -117,6 +133,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd }) {
       case 'dig':
         newStatsUpdate[opposingTeam].dig += 1;
         setCurrentPossession(opposingTeam);
+        updateBallPossession(opposingTeam); // Update possession
         setRallyStage('afterReception');
         break;
       case 'error':
@@ -128,10 +145,12 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd }) {
           newStatsUpdate[currentTeam].attackError += 1;
         }
         setCurrentPossession(opposingTeam);
+        updateBallPossession(opposingTeam); // Update possession
         setShowConfirmation(true);
         break;
       case 'fault':
         setCurrentPossession(opposingTeam);
+        updateBallPossession(opposingTeam); // Update possession
         setShowConfirmation(true);
         break;
       case 'point':
@@ -257,10 +276,6 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd }) {
 
   return (
     <RallyControlContainer>
-      <ServingIndicator>
-        Serving: {currentServer ? teams[currentServer] : 'None'}
-      </ServingIndicator>
-      <h3>Ball Possession: {currentPossession ? teams[currentPossession] : 'None'}</h3>
       <FaultButtonsContainer>
         <TeamFaultButton>
           <ActionButton onClick={() => handleAction('fault', 'teamA')}>Fault {teams.teamA}</ActionButton>
@@ -269,13 +284,17 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd }) {
           <ActionButton onClick={() => handleAction('fault', 'teamB')}>Fault {teams.teamB}</ActionButton>
         </TeamFaultButton>
       </FaultButtonsContainer>
-      <ActionButtonsContainer>{renderActionButtons()}</ActionButtonsContainer>
+      <ActionButtonsContainer>
+        {renderActionButtons()}
+      </ActionButtonsContainer>
       {showConfirmation && (
-        <div>
-          <p>Confirm end of rally?</p>
-          <ActionButton onClick={handleEndRally}>Confirm</ActionButton>
-          <ActionButton onClick={() => setShowConfirmation(false)}>Cancel</ActionButton>
-        </div>
+        <Overlay>
+          <ConfirmationContainer>
+            <p>Confirm end of rally?</p>
+            <ActionButton onClick={handleEndRally}>Confirm</ActionButton>
+            <ActionButton onClick={() => setShowConfirmation(false)}>Cancel</ActionButton>
+          </ConfirmationContainer>
+        </Overlay>
       )}
     </RallyControlContainer>
   );
