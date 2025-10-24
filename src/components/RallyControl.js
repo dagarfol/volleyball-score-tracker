@@ -49,6 +49,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
       block: 0,
       blockPoint: 0,
       blockOut: 0,
+      fault: 0, // New stat for faults
     },
     teamB: {
       serve: 0,
@@ -64,6 +65,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
       block: 0,
       blockPoint: 0,
       blockOut: 0,
+      fault: 0, // New stat for faults
     },
   });
 
@@ -133,6 +135,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         setActionHistory([...actionHistory, { action, team, rallyStage, previousPossession: currentPossession }]);
         break;
       case 'fault':
+        newStatsUpdate[faultingTeam].fault += 1; // Increment fault count
         const teamAwarded = faultingTeam === 'teamA' ? 'teamB' : 'teamA';
         setCurrentPossession(teamAwarded);
         updateBallPossession(teamAwarded);
@@ -203,6 +206,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         updateBallPossession(previousPossession || opposingTeam);
         break;
       case 'fault':
+        newStatsUpdate[team].fault -= 1; // Decrement fault count
         setCurrentPossession(previousPossession);
         updateBallPossession(previousPossession);
         break;
@@ -244,6 +248,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         block: 0,
         blockPoint: 0,
         blockOut: 0,
+        fault: 0,
       },
       teamB: {
         serve: 0,
@@ -259,6 +264,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         block: 0,
         blockPoint: 0,
         blockOut: 0,
+        fault: 0,
       },
     });
 
@@ -268,17 +274,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
   };
 
   const handleCancelConfirmation = () => {
-    // const lastAction = actionHistory[actionHistory.length - 1];
-    // const { previousPossession, action, team } = lastAction;
-
-    // if (action === 'point') {
-    //   handleUndo(); // Undo the point action
-    // } else {
-    //   setCurrentPossession(previousPossession);
-    //   updateBallPossession(previousPossession);
-    // }
-
-    handleUndo();
+    handleUndo(); // Undo the last action
     setShowConfirmation(false);
   };
 
@@ -302,6 +298,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         block: 0,
         blockPoint: 0,
         blockOut: 0,
+        fault: 0,
       },
       teamB: {
         serve: 0,
@@ -317,6 +314,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         block: 0,
         blockPoint: 0,
         blockOut: 0,
+        fault: 0,
       },
     });
 
