@@ -32,15 +32,15 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-function PreMatch({ setMatchDetails }) {
-  const [teamA, setTeamA] = useState('Team A');
-  const [teamB, setTeamB] = useState('Team B');
-  const [teamALogo, setTeamALogo] = useState('');
-  const [teamBLogo, setTeamBLogo] = useState('');
-  const [matchHeader, setMatchHeader] = useState('');
-  const [stadium, setStadium] = useState('');
-  const [extendedInfo, setExtendedInfo] = useState('');
-  const [maxSets, setMaxSets] = useState(5);
+function PreMatch({ setMatchDetails, matchDetails }) {
+  const [teamA, setTeamA] = useState(matchDetails.teams.teamA);
+  const [teamB, setTeamB] = useState(matchDetails.teams.teamB);
+  const [teamALogo, setTeamALogo] = useState(matchDetails.teamLogos.teamA);
+  const [teamBLogo, setTeamBLogo] = useState(matchDetails.teamLogos.teamB);
+  const [matchHeader, setMatchHeader] = useState(matchDetails.matchHeader);
+  const [stadium, setStadium] = useState(matchDetails.stadium);
+  const [extendedInfo, setExtendedInfo] = useState(matchDetails.extendedInfo);
+  const [maxSets, setMaxSets] = useState(matchDetails.maxSets);
   const navigate = useNavigate();
 
   const handleStartMatch = () => {
