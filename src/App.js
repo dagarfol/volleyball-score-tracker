@@ -26,10 +26,13 @@ function App() {
       reception: 0,
       receptionError: 0,
       dig: 0,
+      digError: 0, // New stat
       attack: 0,
+      attackPoint: 0, // New stat
       attackError: 0,
       block: 0,
       blockPoint: 0,
+      blockOut: 0, // New stat
     },
     teamB: {
       serve: 0,
@@ -38,10 +41,13 @@ function App() {
       reception: 0,
       receptionError: 0,
       dig: 0,
+      digError: 0, // New stat
       attack: 0,
+      attackPoint: 0, // New stat
       attackError: 0,
       block: 0,
       blockPoint: 0,
+      blockOut: 0, // New stat
     },
   });
   const [ballPossession, setBallPossession] = useState(null);
@@ -76,10 +82,13 @@ function App() {
         reception: prevStats.teamA.reception + (statsUpdate.teamA.reception || 0),
         receptionError: prevStats.teamA.receptionError + (statsUpdate.teamA.receptionError || 0),
         dig: prevStats.teamA.dig + (statsUpdate.teamA.dig || 0),
+        digError: prevStats.teamA.digError + (statsUpdate.teamA.digError || 0), // Update digError
         attack: prevStats.teamA.attack + (statsUpdate.teamA.attack || 0),
+        attackPoint: prevStats.teamA.attackPoint + (statsUpdate.teamA.attackPoint || 0), // Update attackPoint
         attackError: prevStats.teamA.attackError + (statsUpdate.teamA.attackError || 0),
         block: prevStats.teamA.block + (statsUpdate.teamA.block || 0),
         blockPoint: prevStats.teamA.blockPoint + (statsUpdate.teamA.blockPoint || 0),
+        blockOut: prevStats.teamA.blockOut + (statsUpdate.teamA.blockOut || 0), // Update blockOut
       },
       teamB: {
         serve: prevStats.teamB.serve + (statsUpdate.teamB.serve || 0),
@@ -88,10 +97,13 @@ function App() {
         reception: prevStats.teamB.reception + (statsUpdate.teamB.reception || 0),
         receptionError: prevStats.teamB.receptionError + (statsUpdate.teamB.receptionError || 0),
         dig: prevStats.teamB.dig + (statsUpdate.teamB.dig || 0),
+        digError: prevStats.teamB.digError + (statsUpdate.teamB.digError || 0), // Update digError
         attack: prevStats.teamB.attack + (statsUpdate.teamB.attack || 0),
+        attackPoint: prevStats.teamB.attackPoint + (statsUpdate.teamB.attackPoint || 0), // Update attackPoint
         attackError: prevStats.teamB.attackError + (statsUpdate.teamB.attackError || 0),
         block: prevStats.teamB.block + (statsUpdate.teamB.block || 0),
         blockPoint: prevStats.teamB.blockPoint + (statsUpdate.teamB.blockPoint || 0),
+        blockOut: prevStats.teamB.blockOut + (statsUpdate.teamB.blockOut || 0), // Update blockOut
       },
     }));
 

@@ -94,10 +94,13 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
       reception: 0,
       receptionError: 0,
       dig: 0,
+      digError: 0, // New stat
       attack: 0,
+      attackPoint: 0, // New stat
       attackError: 0,
       block: 0,
       blockPoint: 0,
+      blockOut: 0, // New stat
     },
     teamB: {
       serve: 0,
@@ -106,10 +109,13 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
       reception: 0,
       receptionError: 0,
       dig: 0,
+      digError: 0, // New stat
       attack: 0,
+      attackPoint: 0, // New stat
       attackError: 0,
       block: 0,
       blockPoint: 0,
+      blockOut: 0, // New stat
     },
   });
 
@@ -168,6 +174,10 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
           newStatsUpdate[team].receptionError += 1;
         } else if (rallyStage === 'afterAttack') {
           newStatsUpdate[team].attackError += 1;
+        } else if (rallyStage === 'afterDig') {
+          newStatsUpdate[team].digError += 1; // Dig error
+        } else if (rallyStage === 'afterBlock') {
+          newStatsUpdate[team].blockOut += 1; // Block out
         }
         setCurrentPossession(opposingTeam);
         updateBallPossession(opposingTeam); // Update possession
@@ -187,6 +197,8 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
           newStatsUpdate[team].ace += 1;
         } else if (rallyStage === 'afterBlock') {
           newStatsUpdate[team].blockPoint += 1;
+        } else if (rallyStage === 'afterAttack') {
+          newStatsUpdate[team].attackPoint += 1; // Attack point
         }
         setShowConfirmation(true);
         setActionHistory([...actionHistory, { action, team, rallyStage }]);
@@ -235,6 +247,10 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
           newStatsUpdate[team].receptionError -= 1;
         } else if (previousStage === 'afterAttack') {
           newStatsUpdate[team].attackError -= 1;
+        } else if (previousStage === 'afterDig') {
+          newStatsUpdate[team].digError -= 1; // Undo dig error
+        } else if (previousStage === 'afterBlock') {
+          newStatsUpdate[team].blockOut -= 1; // Undo block out
         }
         setCurrentPossession(opposingTeam);
         updateBallPossession(opposingTeam);
@@ -249,6 +265,8 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
           newStatsUpdate[team].ace -= 1;
         } else if (previousStage === 'afterBlock') {
           newStatsUpdate[team].blockPoint -= 1;
+        } else if (previousStage === 'afterAttack') {
+          newStatsUpdate[team].attackPoint -= 1; // Undo attack point
         }
         break;
       default:
@@ -271,10 +289,13 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         reception: 0,
         receptionError: 0,
         dig: 0,
+        digError: 0,
         attack: 0,
+        attackPoint: 0,
         attackError: 0,
         block: 0,
         blockPoint: 0,
+        blockOut: 0,
       },
       teamB: {
         serve: 0,
@@ -283,10 +304,13 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         reception: 0,
         receptionError: 0,
         dig: 0,
+        digError: 0,
         attack: 0,
+        attackPoint: 0,
         attackError: 0,
         block: 0,
         blockPoint: 0,
+        blockOut: 0,
       },
     });
 
@@ -313,10 +337,13 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         reception: 0,
         receptionError: 0,
         dig: 0,
+        digError: 0,
         attack: 0,
+        attackPoint: 0,
         attackError: 0,
         block: 0,
         blockPoint: 0,
+        blockOut: 0,
       },
       teamB: {
         serve: 0,
@@ -325,10 +352,13 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         reception: 0,
         receptionError: 0,
         dig: 0,
+        digError: 0,
         attack: 0,
+        attackPoint: 0,
         attackError: 0,
         block: 0,
         blockPoint: 0,
+        blockOut: 0,
       },
     });
 

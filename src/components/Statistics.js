@@ -73,9 +73,19 @@ const Statistics = ({ teams, statistics }) => {
             <TableCell>{statistics.teamB.dig}</TableCell>
           </TableRow>
           <TableRow>
+            <TableCell>Dig Errors</TableCell> {/* New stat */}
+            <TableCell>{statistics.teamA.digError}</TableCell>
+            <TableCell>{statistics.teamB.digError}</TableCell>
+          </TableRow>
+          <TableRow>
             <TableCell>Attacks</TableCell>
             <TableCell>{statistics.teamA.attack}</TableCell>
             <TableCell>{statistics.teamB.attack}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Attack Points</TableCell> {/* New stat */}
+            <TableCell>{statistics.teamA.attackPoint}</TableCell>
+            <TableCell>{statistics.teamB.attackPoint}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Attack Errors</TableCell>
@@ -91,6 +101,11 @@ const Statistics = ({ teams, statistics }) => {
             <TableCell>Block Points</TableCell>
             <TableCell>{statistics.teamA.blockPoint}</TableCell>
             <TableCell>{statistics.teamB.blockPoint}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Block Outs</TableCell> {/* New stat */}
+            <TableCell>{statistics.teamA.blockOut}</TableCell>
+            <TableCell>{statistics.teamB.blockOut}</TableCell>
           </TableRow>
         </tbody>
       </Table>
