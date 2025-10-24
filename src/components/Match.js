@@ -170,6 +170,7 @@ function Match({ matchDetails }) {
       <p>Info: {extendedInfo}</p>
       <ScoreBoard
         teams={teams}
+        teamLogos={teamLogos}
         scores={scores}
         setsWon={setsWon}
         currentServer={currentServer}

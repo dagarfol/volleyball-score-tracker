@@ -62,7 +62,14 @@ const ServingIndicator = styled.div`
   border-radius: 50%;
 `;
 
-function ScoreBoard({ teams, scores, setsWon, currentServer, ballPossession, onStartMatch, matchStarted }) {
+const TeamLogo = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-bottom: 5px;
+`;
+
+function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPossession, onStartMatch, matchStarted }) {
   return (
     <ScoreBoardContainer>
       <div>
@@ -71,12 +78,14 @@ function ScoreBoard({ teams, scores, setsWon, currentServer, ballPossession, onS
       </div>
       <ScoresContainer>
         <TeamScoreA isPossession={ballPossession === 'teamA'}>
+          <TeamLogo src={teamLogos.teamA} alt={`${teams.teamA} logo`} />
           <h2>{teams.teamA}</h2>
           <ScoreNumber>{scores.teamA}</ScoreNumber>
           <SetsWon>Sets Won: {setsWon.teamA}</SetsWon>
           {currentServer === 'teamA' && <ServingIndicator />}
         </TeamScoreA>
         <TeamScoreB isPossession={ballPossession === 'teamB'}>
+          <TeamLogo src={teamLogos.teamB} alt={`${teams.teamB} logo`} />
           <h2>{teams.teamB}</h2>
           <ScoreNumber>{scores.teamB}</ScoreNumber>
           <SetsWon>Sets Won: {setsWon.teamB}</SetsWon>
