@@ -149,6 +149,7 @@ function Match({ matchDetails, matchData, setMatchData }) {
       <h1>{matchHeader}</h1>
       <p>Stadium: {stadium}</p>
       <p>Info: {extendedInfo}</p>
+      <Button onClick={() => navigate('/')}>Back to Pre-Match Setup</Button>
       <ScoreBoard
         teams={teams}
         teamLogos={teamLogos}
@@ -168,7 +169,6 @@ function Match({ matchDetails, matchData, setMatchData }) {
         matchStarted={matchData.matchStarted}
       />
       <Statistics teams={teams} statistics={matchData.statistics} />
-      <Button onClick={() => navigate('/')}>Back to Pre-Match Setup</Button>
     </MatchContainer>
   );
 }
