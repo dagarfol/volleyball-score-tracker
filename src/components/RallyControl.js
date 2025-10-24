@@ -1,69 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import ActionButtons from './ActionButtons';
+import ConfirmationDialog from './ConfirmationDialog';
+import FaultButtons from './FaultButtons';
 
 const RallyControlContainer = styled.div`
   width: 100%;
   margin-top: 20px;
   position: relative;
-`;
-
-const ActionButton = styled.button`
-  margin: 5px;
-`;
-
-const FaultButtonsContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-`;
-
-const TeamFaultButton = styled.div`
-  flex: 1;
-  text-align: center;
-`;
-
-const ActionButtonsContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-`;
-
-const LeftButton = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: flex-start;
-`;
-
-const CenterButtons = styled.div`
-  flex: 2;
-  display: flex;
-  justify-content: center;
-`;
-
-const RightButton = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-`;
-
-const Overlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1;
-`;
-
-const ConfirmationContainer = styled.div`
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
 `;
 
 const UndoContainer = styled.div`
@@ -79,12 +23,16 @@ const PreviousActionText = styled.p`
   color: #555;
 `;
 
+const ActionButton = styled.button`
+  margin: 5px;
+`;
+
 function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, updateBallPossession, matchStarted }) {
   const [rallyStage, setRallyStage] = useState('start');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showDiscardConfirmation, setShowDiscardConfirmation] = useState(false);
   const [currentPossession, setCurrentPossession] = useState(ballPossession);
-  const initialPossession = useRef(ballPossession); // Use useRef to store initial possession
+  const initialPossession = useRef(ballPossession);
   const [actionHistory, setActionHistory] = useState([]);
   const [statsUpdate, setStatsUpdate] = useState({
     teamA: {
@@ -94,13 +42,13 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
       reception: 0,
       receptionError: 0,
       dig: 0,
-      digError: 0, // New stat
+      digError: 0,
       attack: 0,
-      attackPoint: 0, // New stat
+      attackPoint: 0,
       attackError: 0,
       block: 0,
       blockPoint: 0,
-      blockOut: 0, // New stat
+      blockOut: 0,
     },
     teamB: {
       serve: 0,
@@ -109,20 +57,20 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
       reception: 0,
       receptionError: 0,
       dig: 0,
-      digError: 0, // New stat
+      digError: 0,
       attack: 0,
-      attackPoint: 0, // New stat
+      attackPoint: 0,
       attackError: 0,
       block: 0,
       blockPoint: 0,
-      blockOut: 0, // New stat
+      blockOut: 0,
     },
   });
 
   useEffect(() => {
     setCurrentPossession(ballPossession);
     if (!initialPossession.current) {
-      initialPossession.current = ballPossession; // Set initial possession once
+      initialPossession.current = ballPossession;
     }
   }, [ballPossession]);
 
@@ -140,7 +88,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
       case 'reception':
         newStatsUpdate[opposingTeam].reception += 1;
         setCurrentPossession(opposingTeam);
-        updateBallPossession(opposingTeam); // Update possession
+        updateBallPossession(opposingTeam);
         setRallyStage('afterReception');
         setActionHistory([...actionHistory, { action, team: opposingTeam, rallyStage }]);
         break;
@@ -152,7 +100,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
       case 'block':
         newStatsUpdate[opposingTeam].block += 1;
         setCurrentPossession(opposingTeam);
-        updateBallPossession(opposingTeam); // Update possession
+        updateBallPossession(opposingTeam);
         setRallyStage('afterBlock');
         setActionHistory([...actionHistory, { action, team: opposingTeam, rallyStage }]);
         break;
@@ -163,8 +111,8 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
       case 'dig':
         newStatsUpdate[opposingTeam].dig += 1;
         setCurrentPossession(opposingTeam);
-        updateBallPossession(opposingTeam); // Update possession
-        setRallyStage('afterReception');
+        updateBallPossession(opposingTeam);
+        setRallyStage('afterDig');
         setActionHistory([...actionHistory, { action, team: opposingTeam, rallyStage }]);
         break;
       case 'error':
@@ -175,20 +123,19 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         } else if (rallyStage === 'afterAttack') {
           newStatsUpdate[team].attackError += 1;
         } else if (rallyStage === 'afterDig') {
-          newStatsUpdate[team].digError += 1; // Dig error
+          newStatsUpdate[team].digError += 1;
         } else if (rallyStage === 'afterBlock') {
-          newStatsUpdate[team].blockOut += 1; // Block out
+          newStatsUpdate[team].blockOut += 1;
         }
         setCurrentPossession(opposingTeam);
-        updateBallPossession(opposingTeam); // Update possession
+        updateBallPossession(opposingTeam);
         setShowConfirmation(true);
-        setActionHistory([...actionHistory, { action, team, rallyStage }]);
+        setActionHistory([...actionHistory, { action, team, rallyStage, previousPossession: currentPossession }]);
         break;
       case 'fault':
-        // Handle fault independently of current possession
         const teamAwarded = faultingTeam === 'teamA' ? 'teamB' : 'teamA';
         setCurrentPossession(teamAwarded);
-        updateBallPossession(teamAwarded); // Update possession
+        updateBallPossession(teamAwarded);
         setShowConfirmation(true);
         setActionHistory([...actionHistory, { action, team: teamAwarded, rallyStage, previousPossession: currentPossession }]);
         break;
@@ -198,10 +145,10 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         } else if (rallyStage === 'afterBlock') {
           newStatsUpdate[team].blockPoint += 1;
         } else if (rallyStage === 'afterAttack') {
-          newStatsUpdate[team].attackPoint += 1; // Attack point
+          newStatsUpdate[team].attackPoint += 1;
         }
         setShowConfirmation(true);
-        setActionHistory([...actionHistory, { action, team, rallyStage }]);
+        setActionHistory([...actionHistory, { action, team, rallyStage, previousPossession: currentPossession }]);
         break;
       default:
         break;
@@ -248,15 +195,14 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         } else if (previousStage === 'afterAttack') {
           newStatsUpdate[team].attackError -= 1;
         } else if (previousStage === 'afterDig') {
-          newStatsUpdate[team].digError -= 1; // Undo dig error
+          newStatsUpdate[team].digError -= 1;
         } else if (previousStage === 'afterBlock') {
-          newStatsUpdate[team].blockOut -= 1; // Undo block out
+          newStatsUpdate[team].blockOut -= 1;
         }
-        setCurrentPossession(opposingTeam);
-        updateBallPossession(opposingTeam);
+        setCurrentPossession(previousPossession || opposingTeam);
+        updateBallPossession(previousPossession || opposingTeam);
         break;
       case 'fault':
-        // Revert possession to the team that had it before the fault
         setCurrentPossession(previousPossession);
         updateBallPossession(previousPossession);
         break;
@@ -266,8 +212,10 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         } else if (previousStage === 'afterBlock') {
           newStatsUpdate[team].blockPoint -= 1;
         } else if (previousStage === 'afterAttack') {
-          newStatsUpdate[team].attackPoint -= 1; // Undo attack point
+          newStatsUpdate[team].attackPoint -= 1;
         }
+        setCurrentPossession(previousPossession || team);
+        updateBallPossession(previousPossession || team);
         break;
       default:
         break;
@@ -320,6 +268,16 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
   };
 
   const handleCancelConfirmation = () => {
+    // const lastAction = actionHistory[actionHistory.length - 1];
+    // const { previousPossession, action, team } = lastAction;
+
+    // if (action === 'point') {
+    //   handleUndo(); // Undo the point action
+    // } else {
+    //   setCurrentPossession(previousPossession);
+    //   updateBallPossession(previousPossession);
+    // }
+
     handleUndo();
     setShowConfirmation(false);
   };
@@ -364,80 +322,9 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
 
     setActionHistory([]);
     setRallyStage('start');
-    setCurrentPossession(initialPossession.current); // Reset possession to initial state
-    updateBallPossession(initialPossession.current); // Update possession
+    setCurrentPossession(initialPossession.current);
+    updateBallPossession(initialPossession.current);
     setShowDiscardConfirmation(false);
-  };
-
-  const renderActionButtons = () => {
-    switch (rallyStage) {
-      case 'start':
-        return (
-          <CenterButtons>
-            <ActionButton onClick={() => handleAction('serve')} disabled={!currentServer}>Serve</ActionButton>
-          </CenterButtons>
-        );
-      case 'afterServe':
-        return (
-          <>
-            <LeftButton>
-              <ActionButton onClick={() => handleAction('error')} disabled={!currentServer}>Error</ActionButton>
-            </LeftButton>
-            <CenterButtons>
-              <ActionButton onClick={() => handleAction('reception')} disabled={!currentServer}>Reception</ActionButton>
-            </CenterButtons>
-            <RightButton>
-              <ActionButton onClick={() => handleAction('point')} disabled={!currentServer}>Point</ActionButton>
-            </RightButton>
-          </>
-        );
-      case 'afterReception':
-        return (
-          <>
-            <LeftButton>
-              <ActionButton onClick={() => handleAction('error')} disabled={!currentServer}>Error</ActionButton>
-            </LeftButton>
-            <CenterButtons>
-              <ActionButton onClick={() => handleAction('attack')} disabled={!currentServer}>Attack</ActionButton>
-            </CenterButtons>
-            <RightButton>
-              <ActionButton onClick={() => handleAction('point')} disabled={!currentServer}>Point</ActionButton>
-            </RightButton>
-          </>
-        );
-      case 'afterAttack':
-        return (
-          <>
-            <LeftButton>
-              <ActionButton onClick={() => handleAction('error')} disabled={!currentServer}>Error</ActionButton>
-            </LeftButton>
-            <CenterButtons>
-              <ActionButton onClick={() => handleAction('block')} disabled={!currentServer}>Block</ActionButton>
-              <ActionButton onClick={() => handleAction('dig')} disabled={!currentServer}>Dig</ActionButton>
-            </CenterButtons>
-            <RightButton>
-              <ActionButton onClick={() => handleAction('point')} disabled={!currentServer}>Point</ActionButton>
-            </RightButton>
-          </>
-        );
-      case 'afterBlock':
-        return (
-          <>
-            <LeftButton>
-              <ActionButton onClick={() => handleAction('error')} disabled={!currentServer}>Error</ActionButton>
-            </LeftButton>
-            <CenterButtons>
-              <ActionButton onClick={() => handleAction('continue')} disabled={!currentServer}>Continue</ActionButton>
-              <ActionButton onClick={() => handleAction('dig')} disabled={!currentServer}>Dig</ActionButton>
-            </CenterButtons>
-            <RightButton>
-              <ActionButton onClick={() => handleAction('point')} disabled={!currentServer}>Point</ActionButton>
-            </RightButton>
-          </>
-        );
-      default:
-        return null;
-    }
   };
 
   const renderPreviousActionText = () => {
@@ -445,7 +332,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
 
     const lastAction = actionHistory[actionHistory.length - 1];
     const { action, team } = lastAction;
-    const teamName = teams[team] || team; // Fallback to team key if name is not set
+    const teamName = teams[team] || team;
     return `Previous action: ${action} by ${teamName}`;
   };
 
@@ -456,34 +343,25 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         <ActionButton onClick={handleUndo} disabled={actionHistory.length === 0}>Go Back</ActionButton>
         <ActionButton onClick={handleDiscardRally}>Discard Rally</ActionButton>
       </UndoContainer>
-      <FaultButtonsContainer>
-        <TeamFaultButton>
-          <ActionButton onClick={() => handleAction('fault', 'teamA')} disabled={!currentServer}>Fault {teams.teamA}</ActionButton>
-        </TeamFaultButton>
-        <TeamFaultButton>
-          <ActionButton onClick={() => handleAction('fault', 'teamB')} disabled={!currentServer}>Fault {teams.teamB}</ActionButton>
-        </TeamFaultButton>
-      </FaultButtonsContainer>
-      <ActionButtonsContainer>
-        {renderActionButtons()}
-      </ActionButtonsContainer>
+      <FaultButtons teams={teams} currentServer={currentServer} handleAction={handleAction} />
+      <ActionButtons
+        rallyStage={rallyStage}
+        currentServer={currentServer}
+        handleAction={handleAction}
+      />
       {showConfirmation && (
-        <Overlay>
-          <ConfirmationContainer>
-            <p>Confirm end of rally?</p>
-            <ActionButton onClick={handleEndRally}>Confirm</ActionButton>
-            <ActionButton onClick={handleCancelConfirmation}>Cancel</ActionButton>
-          </ConfirmationContainer>
-        </Overlay>
+        <ConfirmationDialog
+          message="Confirm end of rally?"
+          onConfirm={handleEndRally}
+          onCancel={handleCancelConfirmation}
+        />
       )}
       {showDiscardConfirmation && (
-        <Overlay>
-          <ConfirmationContainer>
-            <p>Are you sure you want to discard the entire rally?</p>
-            <ActionButton onClick={confirmDiscardRally}>Yes, Discard</ActionButton>
-            <ActionButton onClick={() => setShowDiscardConfirmation(false)}>Cancel</ActionButton>
-          </ConfirmationContainer>
-        </Overlay>
+        <ConfirmationDialog
+          message="Are you sure you want to discard the entire rally?"
+          onConfirm={confirmDiscardRally}
+          onCancel={() => setShowDiscardConfirmation(false)}
+        />
       )}
     </RallyControlContainer>
   );
