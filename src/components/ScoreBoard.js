@@ -67,7 +67,7 @@ const ServingIndicator = styled.div`
   border-radius: 50%;
 `;
 
-function ScoreBoard({ teams, scores, setsWon, currentServer, ballPossession, onStartMatch, onSetTeamNames }) {
+function ScoreBoard({ teams, scores, setsWon, currentServer, ballPossession, onStartMatch, onSetTeamNames, matchStarted }) {
   const [teamAName, setTeamAName] = useState('');
   const [teamBName, setTeamBName] = useState('');
 
@@ -93,8 +93,8 @@ function ScoreBoard({ teams, scores, setsWon, currentServer, ballPossession, onS
         <TeamButton onClick={handleSetNames}>Set Team Names</TeamButton>
       </div>
       <div>
-        <TeamButton onClick={() => onStartMatch('teamA')}>Team A Serves</TeamButton>
-        <TeamButton onClick={() => onStartMatch('teamB')}>Team B Serves</TeamButton>
+        <TeamButton onClick={() => onStartMatch('teamA')} disabled={matchStarted}>Team A Serves</TeamButton>
+        <TeamButton onClick={() => onStartMatch('teamB')} disabled={matchStarted}>Team B Serves</TeamButton>
       </div>
       <ScoresContainer>
         <TeamScoreA isPossession={ballPossession === 'teamA'}>

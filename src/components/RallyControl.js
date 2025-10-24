@@ -66,7 +66,7 @@ const ConfirmationContainer = styled.div`
   text-align: center;
 `;
 
-function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, updateBallPossession }) {
+function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, updateBallPossession, matchStarted }) {
   const [rallyStage, setRallyStage] = useState('start');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [currentPossession, setCurrentPossession] = useState(ballPossession);
@@ -101,14 +101,13 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
     setCurrentPossession(ballPossession);
   }, [ballPossession]);
 
-  const handleAction = (action) => {
-    const currentTeam = currentPossession;
-    const opposingTeam = currentPossession === 'teamA' ? 'teamB' : 'teamA';
+  const handleAction = (action, team) => {
+    const opposingTeam = team === 'teamA' ? 'teamB' : 'teamA';
     let newStatsUpdate = { ...statsUpdate };
 
     switch (action) {
       case 'serve':
-        newStatsUpdate[currentTeam].serve += 1;
+        newStatsUpdate[team].serve += 1;
         setRallyStage('afterServe');
         break;
       case 'reception':
@@ -118,7 +117,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         setRallyStage('afterReception');
         break;
       case 'attack':
-        newStatsUpdate[currentTeam].attack += 1;
+        newStatsUpdate[team].attack += 1;
         setRallyStage('afterAttack');
         break;
       case 'block':
@@ -138,26 +137,27 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         break;
       case 'error':
         if (rallyStage === 'afterServe') {
-          newStatsUpdate[currentTeam].serveError += 1;
+          newStatsUpdate[team].serveError += 1;
         } else if (rallyStage === 'afterReception') {
-          newStatsUpdate[currentTeam].receptionError += 1;
+          newStatsUpdate[team].receptionError += 1;
         } else if (rallyStage === 'afterAttack') {
-          newStatsUpdate[currentTeam].attackError += 1;
+          newStatsUpdate[team].attackError += 1;
         }
         setCurrentPossession(opposingTeam);
         updateBallPossession(opposingTeam); // Update possession
         setShowConfirmation(true);
         break;
       case 'fault':
+        // Award point and possession to the opposing team
         setCurrentPossession(opposingTeam);
         updateBallPossession(opposingTeam); // Update possession
         setShowConfirmation(true);
         break;
       case 'point':
         if (rallyStage === 'afterServe') {
-          newStatsUpdate[currentTeam].ace += 1;
+          newStatsUpdate[team].ace += 1;
         } else if (rallyStage === 'afterBlock') {
-          newStatsUpdate[currentTeam].blockPoint += 1;
+          newStatsUpdate[team].blockPoint += 1;
         }
         setShowConfirmation(true);
         break;
@@ -171,7 +171,6 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
   const handleEndRally = () => {
     onRallyEnd(currentPossession, statsUpdate);
 
-    // Reset statsUpdate after determining possession change
     setStatsUpdate({
       teamA: {
         serve: 0,
@@ -208,20 +207,20 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
       case 'start':
         return (
           <CenterButtons>
-            <ActionButton onClick={() => handleAction('serve')}>Serve</ActionButton>
+            <ActionButton onClick={() => handleAction('serve', currentServer)} disabled={!currentServer}>Serve</ActionButton>
           </CenterButtons>
         );
       case 'afterServe':
         return (
           <>
             <LeftButton>
-              <ActionButton onClick={() => handleAction('error')}>Error</ActionButton>
+              <ActionButton onClick={() => handleAction('error', currentPossession)} disabled={!currentServer}>Error</ActionButton>
             </LeftButton>
             <CenterButtons>
-              <ActionButton onClick={() => handleAction('reception')}>Reception</ActionButton>
+              <ActionButton onClick={() => handleAction('reception', currentPossession)} disabled={!currentServer}>Reception</ActionButton>
             </CenterButtons>
             <RightButton>
-              <ActionButton onClick={() => handleAction('point')}>Point</ActionButton>
+              <ActionButton onClick={() => handleAction('point', currentPossession)} disabled={!currentServer}>Point</ActionButton>
             </RightButton>
           </>
         );
@@ -229,13 +228,13 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         return (
           <>
             <LeftButton>
-              <ActionButton onClick={() => handleAction('error')}>Error</ActionButton>
+              <ActionButton onClick={() => handleAction('error', currentPossession)} disabled={!currentServer}>Error</ActionButton>
             </LeftButton>
             <CenterButtons>
-              <ActionButton onClick={() => handleAction('attack')}>Attack</ActionButton>
+              <ActionButton onClick={() => handleAction('attack', currentPossession)} disabled={!currentServer}>Attack</ActionButton>
             </CenterButtons>
             <RightButton>
-              <ActionButton onClick={() => handleAction('point')}>Point</ActionButton>
+              <ActionButton onClick={() => handleAction('point', currentPossession)} disabled={!currentServer}>Point</ActionButton>
             </RightButton>
           </>
         );
@@ -243,14 +242,14 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         return (
           <>
             <LeftButton>
-              <ActionButton onClick={() => handleAction('error')}>Error</ActionButton>
+              <ActionButton onClick={() => handleAction('error', currentPossession)} disabled={!currentServer}>Error</ActionButton>
             </LeftButton>
             <CenterButtons>
-              <ActionButton onClick={() => handleAction('block')}>Block</ActionButton>
-              <ActionButton onClick={() => handleAction('dig')}>Dig</ActionButton>
+              <ActionButton onClick={() => handleAction('block', currentPossession)} disabled={!currentServer}>Block</ActionButton>
+              <ActionButton onClick={() => handleAction('dig', currentPossession)} disabled={!currentServer}>Dig</ActionButton>
             </CenterButtons>
             <RightButton>
-              <ActionButton onClick={() => handleAction('point')}>Point</ActionButton>
+              <ActionButton onClick={() => handleAction('point', currentPossession)} disabled={!currentServer}>Point</ActionButton>
             </RightButton>
           </>
         );
@@ -258,14 +257,14 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         return (
           <>
             <LeftButton>
-              <ActionButton onClick={() => handleAction('error')}>Error</ActionButton>
+              <ActionButton onClick={() => handleAction('error', currentPossession)} disabled={!currentServer}>Error</ActionButton>
             </LeftButton>
             <CenterButtons>
-              <ActionButton onClick={() => handleAction('continue')}>Continue</ActionButton>
-              <ActionButton onClick={() => handleAction('dig')}>Dig</ActionButton>
+              <ActionButton onClick={() => handleAction('continue', currentPossession)} disabled={!currentServer}>Continue</ActionButton>
+              <ActionButton onClick={() => handleAction('dig', currentPossession)} disabled={!currentServer}>Dig</ActionButton>
             </CenterButtons>
             <RightButton>
-              <ActionButton onClick={() => handleAction('point')}>Point</ActionButton>
+              <ActionButton onClick={() => handleAction('point', currentPossession)} disabled={!currentServer}>Point</ActionButton>
             </RightButton>
           </>
         );
@@ -278,10 +277,10 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
     <RallyControlContainer>
       <FaultButtonsContainer>
         <TeamFaultButton>
-          <ActionButton onClick={() => handleAction('fault', 'teamA')}>Fault {teams.teamA}</ActionButton>
+          <ActionButton onClick={() => handleAction('fault', 'teamA')} disabled={!currentServer}>Fault {teams.teamA}</ActionButton>
         </TeamFaultButton>
         <TeamFaultButton>
-          <ActionButton onClick={() => handleAction('fault', 'teamB')}>Fault {teams.teamB}</ActionButton>
+          <ActionButton onClick={() => handleAction('fault', 'teamB')} disabled={!currentServer}>Fault {teams.teamB}</ActionButton>
         </TeamFaultButton>
       </FaultButtonsContainer>
       <ActionButtonsContainer>

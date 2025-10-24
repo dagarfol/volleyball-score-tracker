@@ -45,6 +45,7 @@ function App() {
     },
   });
   const [ballPossession, setBallPossession] = useState(null);
+  const [matchStarted, setMatchStarted] = useState(false);
 
   const handleTeamNames = (teamA, teamB) => {
     setTeams({ teamA, teamB });
@@ -52,7 +53,8 @@ function App() {
 
   const handleStartMatch = (server) => {
     setCurrentServer(server);
-    setBallPossession(server); // Set initial ball possession to the starting server
+    setBallPossession(server);
+    setMatchStarted(true); // Mark the match as started
   };
 
   const updateBallPossession = (newPossession) => {
@@ -60,14 +62,12 @@ function App() {
   };
 
   const handleRallyEnd = (winner, statsUpdate) => {
-    // Update scores first
     const newScores = {
       ...scores,
       [winner]: scores[winner] + 1,
     };
     setScores(newScores);
 
-    // Update statistics for both teams
     setStatistics((prevStats) => ({
       teamA: {
         serve: prevStats.teamA.serve + (statsUpdate.teamA.serve || 0),
@@ -95,11 +95,9 @@ function App() {
       },
     }));
 
-    // Update the server and ball possession for the next rally
     setCurrentServer(winner);
     setBallPossession(winner);
 
-    // Check for set win after scores are updated
     checkSetWin(newScores);
   };
 
@@ -130,7 +128,6 @@ function App() {
 
   const resetScores = () => {
     setScores({ teamA: 0, teamB: 0 });
-    // Keep the current server as the initial server for the next set
     setBallPossession(currentServer);
   };
 
@@ -139,6 +136,7 @@ function App() {
     setSetsWon({ teamA: 0, teamB: 0 });
     setCurrentServer(null);
     setBallPossession(null);
+    setMatchStarted(false);
   };
 
   return (
@@ -151,13 +149,15 @@ function App() {
         ballPossession={ballPossession}
         onStartMatch={handleStartMatch}
         onSetTeamNames={handleTeamNames}
+        matchStarted={matchStarted}
       />
       <RallyControl
         teams={teams}
         currentServer={currentServer}
         ballPossession={ballPossession}
         onRallyEnd={handleRallyEnd}
-        updateBallPossession={updateBallPossession} // Pass the function to update possession
+        updateBallPossession={updateBallPossession}
+        matchStarted={matchStarted}
       />
       <Statistics teams={teams} statistics={statistics} />
     </AppContainer>
