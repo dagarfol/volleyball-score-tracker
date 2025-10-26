@@ -14,13 +14,34 @@ const MatchContainer = styled.div`
   margin: auto;
 `;
 
-const Button = styled.button`
-  margin-top: 20px;
+const NavigationButton = styled.button`
+  margin-bottom: 20px;
   padding: 10px 20px;
   background-color: #4CAF50;
   color: white;
   border: none;
   cursor: pointer;
+`;
+
+const TimeoutContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
+`;
+
+const TimeoutButton = styled.button`
+  flex: 1;
+  margin: 5px;
+  padding: 10px;
+  background-color: #FF5733; /* Orange for Team B */
+  color: white;
+  border: none;
+  cursor: pointer;
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
 `;
 
 function Match({ matchDetails, matchData, setMatchData }) {
@@ -107,10 +128,20 @@ function Match({ matchDetails, matchData, setMatchData }) {
             ballPossession: null,
             matchStarted: false,
             statistics: updatedStatistics,
+            timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts when match ends
           };
         }
         newScores.teamA = 0;
         newScores.teamB = 0;
+        return {
+          ...prevData,
+          scores: newScores,
+          setsWon: newSetsWon,
+          currentServer: winner,
+          ballPossession: winner,
+          statistics: updatedStatistics,
+          timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts at the start of a new set
+        };
       } else if (newScores.teamB >= requiredPoints && scoreDifference >= 2) {
         newSetsWon.teamB += 1;
         if (newSetsWon.teamB === Math.ceil(maxSets / 2)) {
@@ -127,10 +158,20 @@ function Match({ matchDetails, matchData, setMatchData }) {
             ballPossession: null,
             matchStarted: false,
             statistics: updatedStatistics,
+            timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts when match ends
           };
         }
         newScores.teamA = 0;
         newScores.teamB = 0;
+        return {
+          ...prevData,
+          scores: newScores,
+          setsWon: newSetsWon,
+          currentServer: winner,
+          ballPossession: winner,
+          statistics: updatedStatistics,
+          timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts at the start of a new set
+        };
       }
 
       return {
@@ -144,12 +185,22 @@ function Match({ matchDetails, matchData, setMatchData }) {
     });
   };
 
+  const handleTimeout = (team) => {
+    setMatchData((prevData) => {
+      const newTimeouts = { ...prevData.timeouts, [team]: prevData.timeouts[team] + 1 };
+      return {
+        ...prevData,
+        timeouts: newTimeouts,
+      };
+    });
+  };
+
   return (
     <MatchContainer>
+      <NavigationButton onClick={() => navigate('/')}>Back to Pre-Match Setup</NavigationButton>
       <h1>{matchHeader}</h1>
       <p>Stadium: {stadium}</p>
       <p>Info: {extendedInfo}</p>
-      <Button onClick={() => navigate('/')}>Back to Pre-Match Setup</Button>
       <ScoreBoard
         teams={teams}
         teamLogos={teamLogos}
@@ -160,6 +211,20 @@ function Match({ matchDetails, matchData, setMatchData }) {
         onStartMatch={handleStartMatch}
         matchStarted={matchData.matchStarted}
       />
+      <TimeoutContainer>
+        <TimeoutButton
+          onClick={() => handleTimeout('teamA')}
+          disabled={matchData.timeouts.teamA >= 2}
+        >
+          Team A Timeout ({matchData.timeouts.teamA}/2)
+        </TimeoutButton>
+        <TimeoutButton
+          onClick={() => handleTimeout('teamB')}
+          disabled={matchData.timeouts.teamB >= 2}
+        >
+          Team B Timeout ({matchData.timeouts.teamB}/2)
+        </TimeoutButton>
+      </TimeoutContainer>
       <RallyControl
         teams={teams}
         currentServer={matchData.currentServer}

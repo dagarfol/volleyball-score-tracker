@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import PreMatch from './components/PreMatch';
 import Match from './components/Match';
 
@@ -53,6 +53,7 @@ function App() {
       },
     },
     matchStarted: false,
+    timeouts: { teamA: 0, teamB: 0 }, // Initialize timeouts here
   });
 
   return (
