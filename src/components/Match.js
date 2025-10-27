@@ -64,125 +64,131 @@ function Match({ matchDetails, matchData, setMatchData }) {
     }));
   };
 
-  const handleRallyEnd = (winner, statsUpdate) => {
-    setMatchData((prevData) => {
-      const newScores = {
-        ...prevData.scores,
-        [winner]: prevData.scores[winner] + 1,
-      };
+  const checkSetWinningConditions = (newScores, updatedStatistics) => {
+    const newSetsWon = { ...matchData.setsWon };
 
-      const updatedStatistics = {
-        teamA: {
-          serve: prevData.statistics.teamA.serve + (statsUpdate.teamA.serve || 0),
-          ace: prevData.statistics.teamA.ace + (statsUpdate.teamA.ace || 0),
-          serveError: prevData.statistics.teamA.serveError + (statsUpdate.teamA.serveError || 0),
-          reception: prevData.statistics.teamA.reception + (statsUpdate.teamA.reception || 0),
-          receptionError: prevData.statistics.teamA.receptionError + (statsUpdate.teamA.receptionError || 0),
-          dig: prevData.statistics.teamA.dig + (statsUpdate.teamA.dig || 0),
-          digError: prevData.statistics.teamA.digError + (statsUpdate.teamA.digError || 0),
-          attack: prevData.statistics.teamA.attack + (statsUpdate.teamA.attack || 0),
-          attackPoint: prevData.statistics.teamA.attackPoint + (statsUpdate.teamA.attackPoint || 0),
-          attackError: prevData.statistics.teamA.attackError + (statsUpdate.teamA.attackError || 0),
-          block: prevData.statistics.teamA.block + (statsUpdate.teamA.block || 0),
-          blockPoint: prevData.statistics.teamA.blockPoint + (statsUpdate.teamA.blockPoint || 0),
-          blockOut: prevData.statistics.teamA.blockOut + (statsUpdate.teamA.blockOut || 0),
-          fault: prevData.statistics.teamA.fault + (statsUpdate.teamA.fault || 0),
-        },
-        teamB: {
-          serve: prevData.statistics.teamB.serve + (statsUpdate.teamB.serve || 0),
-          ace: prevData.statistics.teamB.ace + (statsUpdate.teamB.ace || 0),
-          serveError: prevData.statistics.teamB.serveError + (statsUpdate.teamB.serveError || 0),
-          reception: prevData.statistics.teamB.reception + (statsUpdate.teamB.reception || 0),
-          receptionError: prevData.statistics.teamB.receptionError + (statsUpdate.teamB.receptionError || 0),
-          dig: prevData.statistics.teamB.dig + (statsUpdate.teamB.dig || 0),
-          digError: prevData.statistics.teamB.digError + (statsUpdate.teamB.digError || 0),
-          attack: prevData.statistics.teamB.attack + (statsUpdate.teamB.attack || 0),
-          attackPoint: prevData.statistics.teamB.attackPoint + (statsUpdate.teamB.attackPoint || 0),
-          attackError: prevData.statistics.teamB.attackError + (statsUpdate.teamB.attackError || 0),
-          block: prevData.statistics.teamB.block + (statsUpdate.teamB.block || 0),
-          blockPoint: prevData.statistics.teamB.blockPoint + (statsUpdate.teamB.blockPoint || 0),
-          blockOut: prevData.statistics.teamB.blockOut + (statsUpdate.teamB.blockOut || 0),
-          fault: prevData.statistics.teamB.fault + (statsUpdate.teamB.fault || 0),
-        },
-      };
+    const scoreDifference = Math.abs(newScores.teamA - newScores.teamB);
+    const isTiebreakerSet = newSetsWon.teamA + newSetsWon.teamB === maxSets - 1;
+    const requiredPoints = isTiebreakerSet ? 15 : 25;
 
-      const newSetsWon = { ...prevData.setsWon };
-
-      const scoreDifference = Math.abs(newScores.teamA - newScores.teamB);
-      const isTiebreakerSet = newSetsWon.teamA + newSetsWon.teamB === maxSets - 1;
-      const requiredPoints = isTiebreakerSet ? 15 : 25;
-
-      if (newScores.teamA >= requiredPoints && scoreDifference >= 2) {
-        newSetsWon.teamA += 1;
-        if (newSetsWon.teamA === Math.ceil(maxSets / 2)) {
-          alert(`${teams.teamA} wins the match!`);
-          newScores.teamA = 0;
-          newScores.teamB = 0;
-          newSetsWon.teamA = 0;
-          newSetsWon.teamB = 0;
-          return {
-            ...prevData,
-            scores: newScores,
-            setsWon: newSetsWon,
-            currentServer: null,
-            ballPossession: null,
-            matchStarted: false,
-            statistics: updatedStatistics,
-            timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts when match ends
-          };
-        }
+    if (newScores.teamA >= requiredPoints && scoreDifference >= 2) {
+      newSetsWon.teamA += 1;
+      if (newSetsWon.teamA === Math.ceil(maxSets / 2)) {
+        alert(`${teams.teamA} wins the match!`);
         newScores.teamA = 0;
         newScores.teamB = 0;
-        return {
-          ...prevData,
+        newSetsWon.teamA = 0;
+        newSetsWon.teamB = 0;
+        setMatchData({
+          ...matchData,
           scores: newScores,
           setsWon: newSetsWon,
-          currentServer: winner,
-          ballPossession: winner,
+          currentServer: null,
+          ballPossession: null,
+          matchStarted: false,
           statistics: updatedStatistics,
-          timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts at the start of a new set
-        };
-      } else if (newScores.teamB >= requiredPoints && scoreDifference >= 2) {
-        newSetsWon.teamB += 1;
-        if (newSetsWon.teamB === Math.ceil(maxSets / 2)) {
-          alert(`${teams.teamB} wins the match!`);
-          newScores.teamA = 0;
-          newScores.teamB = 0;
-          newSetsWon.teamA = 0;
-          newSetsWon.teamB = 0;
-          return {
-            ...prevData,
-            scores: newScores,
-            setsWon: newSetsWon,
-            currentServer: null,
-            ballPossession: null,
-            matchStarted: false,
-            statistics: updatedStatistics,
-            timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts when match ends
-          };
-        }
-        newScores.teamA = 0;
-        newScores.teamB = 0;
-        return {
-          ...prevData,
-          scores: newScores,
-          setsWon: newSetsWon,
-          currentServer: winner,
-          ballPossession: winner,
-          statistics: updatedStatistics,
-          timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts at the start of a new set
-        };
+          timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts when match ends
+        });
+        return;
       }
-
-      return {
-        ...prevData,
+      newScores.teamA = 0;
+      newScores.teamB = 0;
+      setMatchData({
+        ...matchData,
         scores: newScores,
         setsWon: newSetsWon,
-        currentServer: winner,
-        ballPossession: winner,
+        currentServer: matchData.currentServer,
+        ballPossession: matchData.ballPossession,
         statistics: updatedStatistics,
-      };
+        timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts at the start of a new set
+      });
+      return;
+    } else if (newScores.teamB >= requiredPoints && scoreDifference >= 2) {
+      newSetsWon.teamB += 1;
+      if (newSetsWon.teamB === Math.ceil(maxSets / 2)) {
+        alert(`${teams.teamB} wins the match!`);
+        newScores.teamA = 0;
+        newScores.teamB = 0;
+        newSetsWon.teamA = 0;
+        newSetsWon.teamB = 0;
+        setMatchData({
+          ...matchData,
+          scores: newScores,
+          setsWon: newSetsWon,
+          currentServer: null,
+          ballPossession: null,
+          matchStarted: false,
+          statistics: updatedStatistics,
+          timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts when match ends
+        });
+        return;
+      }
+      newScores.teamA = 0;
+      newScores.teamB = 0;
+      setMatchData({
+        ...matchData,
+        scores: newScores,
+        setsWon: newSetsWon,
+        currentServer: matchData.currentServer,
+        ballPossession: matchData.ballPossession,
+        statistics: updatedStatistics,
+        timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts at the start of a new set
+      });
+      return;
+    }
+
+    setMatchData({
+      ...matchData,
+      scores: newScores,
+      setsWon: newSetsWon,
+      currentServer: matchData.currentServer,
+      ballPossession: matchData.ballPossession,
+      statistics: updatedStatistics,
     });
+  };
+
+  const handleRallyEnd = (winner, statsUpdate = {}) => {
+    const newScores = {
+      ...matchData.scores,
+      [winner]: matchData.scores[winner] + 1,
+    };
+
+    const updatedStatistics = {
+      teamA: {
+        serve: matchData.statistics.teamA.serve + (statsUpdate.teamA?.serve || 0),
+        ace: matchData.statistics.teamA.ace + (statsUpdate.teamA?.ace || 0),
+        serveError: matchData.statistics.teamA.serveError + (statsUpdate.teamA?.serveError || 0),
+        reception: matchData.statistics.teamA.reception + (statsUpdate.teamA?.reception || 0),
+        receptionError: matchData.statistics.teamA.receptionError + (statsUpdate.teamA?.receptionError || 0),
+        dig: matchData.statistics.teamA.dig + (statsUpdate.teamA?.dig || 0),
+        digError: matchData.statistics.teamA.digError + (statsUpdate.teamA?.digError || 0),
+        attack: matchData.statistics.teamA.attack + (statsUpdate.teamA?.attack || 0),
+        attackPoint: matchData.statistics.teamA.attackPoint + (statsUpdate.teamA?.attackPoint || 0),
+        attackError: matchData.statistics.teamA.attackError + (statsUpdate.teamA?.attackError || 0),
+        block: matchData.statistics.teamA.block + (statsUpdate.teamA?.block || 0),
+        blockPoint: matchData.statistics.teamA.blockPoint + (statsUpdate.teamA?.blockPoint || 0),
+        blockOut: matchData.statistics.teamA.blockOut + (statsUpdate.teamA?.blockOut || 0),
+        fault: matchData.statistics.teamA.fault + (statsUpdate.teamA?.fault || 0),
+      },
+      teamB: {
+        serve: matchData.statistics.teamB.serve + (statsUpdate.teamB?.serve || 0),
+        ace: matchData.statistics.teamB.ace + (statsUpdate.teamB?.ace || 0),
+        serveError: matchData.statistics.teamB.serveError + (statsUpdate.teamB?.serveError || 0),
+        reception: matchData.statistics.teamB.reception + (statsUpdate.teamB?.reception || 0),
+        receptionError: matchData.statistics.teamB.receptionError + (statsUpdate.teamB?.receptionError || 0),
+        dig: matchData.statistics.teamB.dig + (statsUpdate.teamB?.dig || 0),
+        digError: matchData.statistics.teamB.digError + (statsUpdate.teamB?.digError || 0),
+        attack: matchData.statistics.teamB.attack + (statsUpdate.teamB?.attack || 0),
+        attackPoint: matchData.statistics.teamB.attackPoint + (statsUpdate.teamB?.attackPoint || 0),
+        attackError: matchData.statistics.teamB.attackError + (statsUpdate.teamB?.attackError || 0),
+        block: matchData.statistics.teamB.block + (statsUpdate.teamB?.block || 0),
+        blockPoint: matchData.statistics.teamB.blockPoint + (statsUpdate.teamB?.blockPoint || 0),
+        blockOut: matchData.statistics.teamB.blockOut + (statsUpdate.teamB?.blockOut || 0),
+        fault: matchData.statistics.teamB.fault + (statsUpdate.teamB?.fault || 0),
+      },
+    };
+
+    checkSetWinningConditions(newScores, updatedStatistics);
   };
 
   const handleTimeout = (team) => {
@@ -193,6 +199,15 @@ function Match({ matchDetails, matchData, setMatchData }) {
         timeouts: newTimeouts,
       };
     });
+  };
+
+  const handleAdjustScore = (team, adjustment) => {
+    const newScores = {
+      ...matchData.scores,
+      [team]: Math.max(0, matchData.scores[team] + adjustment), // Prevent negative scores
+    };
+
+    checkSetWinningConditions(newScores, matchData.statistics);
   };
 
   return (
@@ -210,6 +225,7 @@ function Match({ matchDetails, matchData, setMatchData }) {
         ballPossession={matchData.ballPossession}
         onStartMatch={handleStartMatch}
         matchStarted={matchData.matchStarted}
+        onAdjustScore={handleAdjustScore}
       />
       <TimeoutContainer>
         <TimeoutButton

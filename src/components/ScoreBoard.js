@@ -22,7 +22,9 @@ const ScoresContainer = styled.div`
 
 const TeamScoreA = styled.div`
   flex: 1;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background-color: #007BFF; /* Blue for Team A */
   color: white;
   padding: 10px;
@@ -33,7 +35,9 @@ const TeamScoreA = styled.div`
 
 const TeamScoreB = styled.div`
   flex: 1;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background-color: #FF5733; /* Orange for Team B */
   color: white;
   padding: 10px;
@@ -42,9 +46,15 @@ const TeamScoreB = styled.div`
   border: ${({ isPossession }) => (isPossession ? '3px solid #32CD32' : 'none')}; /* Green border for possession */
 `;
 
+const ScoreNumberContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const ScoreNumber = styled.p`
   font-size: 2em;
-  margin: 0;
+  margin: 0 10px;
 `;
 
 const SetsWon = styled.p`
@@ -69,7 +79,21 @@ const TeamLogo = styled.img`
   margin-bottom: 5px;
 `;
 
-function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPossession, onStartMatch, matchStarted }) {
+const ScoreAdjustContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const ScoreAdjustButton = styled.button`
+  margin: 5px;
+  padding: 5px 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+`;
+
+function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPossession, onStartMatch, matchStarted, onAdjustScore }) {
   return (
     <ScoreBoardContainer>
       <div>
@@ -78,16 +102,32 @@ function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPoss
       </div>
       <ScoresContainer>
         <TeamScoreA isPossession={ballPossession === 'teamA'}>
-          <TeamLogo src={teamLogos.teamA} alt={`${teams.teamA} logo`} />
-          <h2>{teams.teamA}</h2>
-          <ScoreNumber>{scores.teamA}</ScoreNumber>
+          <div>
+            <TeamLogo src={teamLogos.teamA} alt={`${teams.teamA} logo`} />
+            <h2>{teams.teamA}</h2>
+          </div>
+          <ScoreNumberContainer>
+            <ScoreAdjustContainer>
+              <ScoreAdjustButton onClick={() => onAdjustScore('teamA', 1)}>+</ScoreAdjustButton>
+              <ScoreAdjustButton onClick={() => onAdjustScore('teamA', -1)}>-</ScoreAdjustButton>
+            </ScoreAdjustContainer>
+            <ScoreNumber>{scores.teamA}</ScoreNumber>
+          </ScoreNumberContainer>
           <SetsWon>Sets Won: {setsWon.teamA}</SetsWon>
           {currentServer === 'teamA' && <ServingIndicator />}
         </TeamScoreA>
         <TeamScoreB isPossession={ballPossession === 'teamB'}>
-          <TeamLogo src={teamLogos.teamB} alt={`${teams.teamB} logo`} />
-          <h2>{teams.teamB}</h2>
-          <ScoreNumber>{scores.teamB}</ScoreNumber>
+          <div>
+            <TeamLogo src={teamLogos.teamB} alt={`${teams.teamB} logo`} />
+            <h2>{teams.teamB}</h2>
+          </div>
+          <ScoreNumberContainer>
+            <ScoreNumber>{scores.teamB}</ScoreNumber>
+            <ScoreAdjustContainer>
+              <ScoreAdjustButton onClick={() => onAdjustScore('teamB', 1)}>+</ScoreAdjustButton>
+              <ScoreAdjustButton onClick={() => onAdjustScore('teamB', -1)}>-</ScoreAdjustButton>
+            </ScoreAdjustContainer>
+          </ScoreNumberContainer>
           <SetsWon>Sets Won: {setsWon.teamB}</SetsWon>
           {currentServer === 'teamB' && <ServingIndicator />}
         </TeamScoreB>
