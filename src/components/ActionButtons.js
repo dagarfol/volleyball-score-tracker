@@ -1,111 +1,108 @@
 import React from 'react';
 import styled from 'styled-components';
 
+const ActionButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 10px;
+`;
+
+const InnerActionButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+    width: 33%;
+`;
+
 const ActionButton = styled.button`
   margin: 5px;
+  padding: 10px 20px;
+  background-color: ${({ type, disabled }) => {
+    if (disabled) {
+      return '#ccc'; // Gray for disabled buttons
+    }
+    switch (type) {
+      case 'point':
+        return '#FFD700'; // Gold for points
+      case 'error':
+        return '#FF5733'; // Orange for errors
+      default:
+        return '#4CAF50'; // Green for general actions
+    }
+  }};
+  color: white;
+  border: none;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  font-size: 1em;
+  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
+  visibility: ${({ visible }) => (visible ? 'visible' : 'hidden')};
 `;
 
-const ActionButtonsContainer = styled.div`
+const FixedButtonContainer = styled.div`
   display: flex;
-  justify-content: center;
-  margin-top: 20px;
-`;
-
-const LeftButton = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: flex-start;
-`;
-
-const CenterButtons = styled.div`
-  flex: 2;
-  display: flex;
-  justify-content: center;
-`;
-
-const RightButton = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: center;
+  width: 33%;
 `;
 
 function ActionButtons({ rallyStage, currentServer, handleAction }) {
-  const renderActionButtons = () => {
-    switch (rallyStage) {
-      case 'start':
-        return (
-          <CenterButtons>
-            <ActionButton onClick={() => handleAction('serve')} disabled={!currentServer}>Serve</ActionButton>
-          </CenterButtons>
-        );
-      case 'afterServe':
-        return (
-          <>
-            <LeftButton>
-              <ActionButton onClick={() => handleAction('error')} disabled={!currentServer}>Error</ActionButton>
-            </LeftButton>
-            <CenterButtons>
-              <ActionButton onClick={() => handleAction('reception')} disabled={!currentServer}>Reception</ActionButton>
-            </CenterButtons>
-            <RightButton>
-              <ActionButton onClick={() => handleAction('point')} disabled={!currentServer}>Point</ActionButton>
-            </RightButton>
-          </>
-        );
-      case 'afterDig':
-      case 'afterReception':
-        return (
-          <>
-            <LeftButton>
-              <ActionButton onClick={() => handleAction('error')} disabled={!currentServer}>Error</ActionButton>
-            </LeftButton>
-            <CenterButtons>
-              <ActionButton onClick={() => handleAction('attack')} disabled={!currentServer}>Attack</ActionButton>
-            </CenterButtons>
-            <RightButton>
-              <ActionButton onClick={() => handleAction('point')} disabled={!currentServer}>Point</ActionButton>
-            </RightButton>
-          </>
-        );
-      case 'afterAttack':
-        return (
-          <>
-            <LeftButton>
-              <ActionButton onClick={() => handleAction('error')} disabled={!currentServer}>Error</ActionButton>
-            </LeftButton>
-            <CenterButtons>
-              <ActionButton onClick={() => handleAction('block')} disabled={!currentServer}>Block</ActionButton>
-              <ActionButton onClick={() => handleAction('dig')} disabled={!currentServer}>Dig</ActionButton>
-            </CenterButtons>
-            <RightButton>
-              <ActionButton onClick={() => handleAction('point')} disabled={!currentServer}>Point</ActionButton>
-            </RightButton>
-          </>
-        );
-      case 'afterBlock':
-        return (
-          <>
-            <LeftButton>
-              <ActionButton onClick={() => handleAction('error')} disabled={!currentServer}>Error</ActionButton>
-            </LeftButton>
-            <CenterButtons>
-              <ActionButton onClick={() => handleAction('continue')} disabled={!currentServer}>Continue</ActionButton>
-              <ActionButton onClick={() => handleAction('dig')} disabled={!currentServer}>Dig</ActionButton>
-            </CenterButtons>
-            <RightButton>
-              <ActionButton onClick={() => handleAction('point')} disabled={!currentServer}>Point</ActionButton>
-            </RightButton>
-          </>
-        );
-      default:
-        return null;
-    }
-  };
+  const actions = [];
+
+  if (rallyStage === 'start') {
+    actions.push({ label: 'Serve', action: 'serve' });
+  } else if (rallyStage === 'afterServe') {
+    actions.push({ label: 'Reception', action: 'reception' });
+  } else if (rallyStage === 'afterReception') {
+    actions.push({ label: 'Attack', action: 'attack' });
+  } else if (rallyStage === 'afterAttack') {
+    actions.push({ label: 'Block', action: 'block' });
+    actions.push({ label: 'Dig', action: 'dig' });
+  } else if (rallyStage === 'afterBlock') {
+    actions.push({ label: 'Dig', action: 'dig' });
+    actions.push({ label: 'Continue', action: 'continue' });
+  } else if (rallyStage === 'afterDig') {
+    actions.push({ label: 'Attack', action: 'attack' });
+  }
+
+  const showErrorButton = ['afterServe', 'afterReception', 'afterAttack', 'afterBlock', 'afterDig'].includes(rallyStage);
+  const showPointButton = ['afterServe', 'afterReception', 'afterAttack', 'afterBlock', 'afterDig'].includes(rallyStage);
 
   return (
-    <ActionButtonsContainer>
-      {renderActionButtons()}
-    </ActionButtonsContainer>
+    <ActionButtonContainer>
+      <FixedButtonContainer>
+        <ActionButton
+          type="error"
+          onClick={() => handleAction('error')}
+          disabled={!currentServer}
+          visible={showErrorButton}
+        >
+          Error
+        </ActionButton>
+      </FixedButtonContainer>
+      <InnerActionButtonContainer>
+      {actions.map(({ label, action }) => (
+        <ActionButton
+          key={action}
+          onClick={() => handleAction(action)}
+          disabled={!currentServer}
+          visible={true}
+        >
+          {label}
+        </ActionButton>
+      ))}
+      </InnerActionButtonContainer>
+      <FixedButtonContainer>
+        <ActionButton
+          type="point"
+          onClick={() => handleAction('point')}
+          disabled={!currentServer}
+          visible={showPointButton}
+        >
+          Point
+        </ActionButton>
+      </FixedButtonContainer>
+    </ActionButtonContainer>
   );
 }
 

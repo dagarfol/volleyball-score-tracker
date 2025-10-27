@@ -1,35 +1,42 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const FaultButtonsContainer = styled.div`
+const FaultButtonContainer = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
+  flex-wrap: wrap;
   margin-top: 10px;
 `;
 
-const TeamFaultButton = styled.div`
-  flex: 1;
-  text-align: center;
-`;
-
-const ActionButton = styled.button`
+const FaultButton = styled.button`
   margin: 5px;
+  padding: 10px 20px;
+  background-color: ${({ type, disabled }) => {
+    if (disabled) {
+      return '#ccc'; // Gray for disabled buttons
+    }
+    return '#FF4500'; // OrangeRed for fault buttons
+  }};
+  color: white;
+  border: none;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  font-size: 1em;
+  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
 `;
 
 function FaultButtons({ teams, currentServer, handleAction }) {
   return (
-    <FaultButtonsContainer>
-      <TeamFaultButton>
-        <ActionButton onClick={() => handleAction('fault', 'teamA')} disabled={!currentServer}>
-          Fault {teams.teamA}
-        </ActionButton>
-      </TeamFaultButton>
-      <TeamFaultButton>
-        <ActionButton onClick={() => handleAction('fault', 'teamB')} disabled={!currentServer}>
-          Fault {teams.teamB}
-        </ActionButton>
-      </TeamFaultButton>
-    </FaultButtonsContainer>
+    <FaultButtonContainer>
+      {Object.keys(teams).map((team) => (
+        <FaultButton
+          key={team}
+          onClick={() => handleAction('fault', team)}
+          disabled={!currentServer}
+        >
+          Fault {teams[team]}
+        </FaultButton>
+      ))}
+    </FaultButtonContainer>
   );
 }
 

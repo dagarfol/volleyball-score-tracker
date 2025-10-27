@@ -34,12 +34,14 @@ const TimeoutButton = styled.button`
   flex: 1;
   margin: 5px;
   padding: 10px;
-  background-color: #FF5733; /* Orange for Team B */
+  background-color: #007BFF;
   color: white;
   border: none;
   cursor: pointer;
+  opacity: 1;
   &:disabled {
-    background-color: #ccc;
+    // background-color: #ccc;
+    opacity: 0.6;
     cursor: not-allowed;
   }
 `;
