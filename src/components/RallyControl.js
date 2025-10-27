@@ -21,10 +21,18 @@ const PreviousActionText = styled.p`
   margin: 0;
   font-size: 0.9em;
   color: #555;
+  width: 45%;
 `;
 
-const ActionButton = styled.button`
+const StyledButton = styled.button`
   margin: 5px;
+  padding: 10px 20px;
+  background-color: ${({ disabled }) => (disabled ? '#ccc' : '#3f382eff')}; // DodgerBlue for go back button
+  color: white;
+  border: none;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  font-size: 1em;
+  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
 `;
 
 function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, updateBallPossession, matchStarted }) {
@@ -341,8 +349,8 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
     <RallyControlContainer>
       <UndoContainer>
         <PreviousActionText>{renderPreviousActionText()}</PreviousActionText>
-        <ActionButton onClick={handleUndo} disabled={actionHistory.length === 0}>Go Back</ActionButton>
-        <ActionButton onClick={handleDiscardRally} disabled={!currentServer}>Discard Rally</ActionButton>
+        <StyledButton onClick={handleUndo} disabled={actionHistory.length === 0}>Go Back</StyledButton>
+        <StyledButton onClick={handleDiscardRally} disabled={!currentServer}>Discard Rally</StyledButton>
       </UndoContainer>
       <FaultButtons teams={teams} currentServer={currentServer} handleAction={handleAction} />
       <ActionButtons

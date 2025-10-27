@@ -53,7 +53,7 @@ const ScoreNumberContainer = styled.div`
 `;
 
 const ScoreNumber = styled.p`
-  font-size: 2em;
+  font-size: 3em;
   margin: 0 10px;
 `;
 
