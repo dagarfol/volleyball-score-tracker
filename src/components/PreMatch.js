@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -32,6 +32,20 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
+const StatInputs = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  margin-top: 15px;
+`;
+
+const StatInput = styled.input`
+  padding: 8px;
+  width: 100%;
+`;
+
+
 function PreMatch({ setMatchDetails, matchDetails }) {
   const [teamA, setTeamA] = useState(matchDetails.teams.teamA);
   const [teamB, setTeamB] = useState(matchDetails.teams.teamB);
@@ -41,6 +55,8 @@ function PreMatch({ setMatchDetails, matchDetails }) {
   const [stadium, setStadium] = useState(matchDetails.stadium);
   const [extendedInfo, setExtendedInfo] = useState(matchDetails.extendedInfo);
   const [maxSets, setMaxSets] = useState(matchDetails.maxSets);
+  const [statsA, setStatsA] = useState(matchDetails.stats.teamA);
+  const [statsB, setStatsB] = useState(matchDetails.stats.teamB);
   const navigate = useNavigate();
 
   const handleStartMatch = () => {
@@ -55,6 +71,59 @@ function PreMatch({ setMatchDetails, matchDetails }) {
     navigate('/match');
   };
 
+  // Update local stats state when matchDetails prop changes (if any)
+  useEffect(() => {
+    setStatsA(matchDetails.stats.teamA);
+    setStatsB(matchDetails.stats.teamB);
+  }, [matchDetails.stats]);
+
+  const handleStatChange = (team, stat, value) => {
+    const intValue = parseInt(value, 10);
+    if (team === 'A') {
+      setStatsA(prevStats => ({
+        ...prevStats,
+        [stat]: isNaN(intValue) ? 0 : intValue,
+      }));
+    } else {
+      setStatsB(prevStats => ({
+        ...prevStats,
+        [stat]: isNaN(intValue) ? 0 : intValue,
+      }));
+    }
+  };
+
+
+  const handleShowMatchup = () => {}
+  const handleShowTeamComparison = () => {}
+  
+  const statFields = [
+    { label: 'Ranking', key: 'ranking' },
+    { label: 'Matches Played', key: 'matchesPlayed' },
+    { label: 'Total Matches Won', key: 'totalMatchesWon' },
+    { label: 'Won 3 Points', key: 'won3Points' },
+    { label: 'Won 2 Points', key: 'won2Points' },
+    { label: 'Total Matches Lost', key: 'totalMatchesLost' },
+    { label: 'Lost 1 Point', key: 'lost1Point' },
+    { label: 'Lost 0 Points', key: 'lost0Points' },
+    { label: 'Total Points Scored', key: 'totalPointsScored' },
+    { label: 'Total Points Received', key: 'totalPointsReceived' },
+  ];
+
+  const renderStatInputs = (team, stats) => (
+    <StatInputs>
+      {statFields.map(field => (
+        <React.Fragment key={field.key}>
+          <label>{field.label}</label>
+          <StatInput
+            type="number"
+            value={stats[field.key]}
+            onChange={(e) => handleStatChange(team, field.key, e.target.value)}
+          />
+        </React.Fragment>
+      ))}
+    </StatInputs>
+  );
+
   return (
     <PreMatchContainer>
       <h1>Pre-Match Setup</h1>
@@ -63,6 +132,18 @@ function PreMatch({ setMatchDetails, matchDetails }) {
         placeholder="Match Header"
         value={matchHeader}
         onChange={(e) => setMatchHeader(e.target.value)}
+      />
+      <Input
+        type="text"
+        placeholder="Extended Info"
+        value={extendedInfo}
+        onChange={(e) => setExtendedInfo(e.target.value)}
+      />
+      <Input
+        type="text"
+        placeholder="Stadium"
+        value={stadium}
+        onChange={(e) => setStadium(e.target.value)}
       />
       <Input
         type="text"
@@ -88,22 +169,18 @@ function PreMatch({ setMatchDetails, matchDetails }) {
         value={teamBLogo}
         onChange={(e) => setTeamBLogo(e.target.value)}
       />
+      <h2>{teamA} Statistics (Team A)</h2>
+      {renderStatInputs('A', statsA)}
+
+      <h2>{teamB} Statistics (Team B)</h2>
+      {renderStatInputs('B', statsB)}
+
       <Select value={maxSets} onChange={(e) => setMaxSets(parseInt(e.target.value, 10))}>
         <option value={3}>3 Sets</option>
         <option value={5}>5 Sets</option>
       </Select>
-      <Input
-        type="text"
-        placeholder="Stadium"
-        value={stadium}
-        onChange={(e) => setStadium(e.target.value)}
-      />
-      <Input
-        type="text"
-        placeholder="Extended Info"
-        value={extendedInfo}
-        onChange={(e) => setExtendedInfo(e.target.value)}
-      />
+      <Button onClick={handleShowMatchup}>Show Matchup</Button>
+      <Button onClick={handleShowTeamComparison}>Show Team Comparison</Button>
       <Button onClick={handleStartMatch}>Start Match</Button>
     </PreMatchContainer>
   );
