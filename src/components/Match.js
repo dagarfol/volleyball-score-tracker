@@ -89,10 +89,10 @@ const calculateUpdatedStatistics = (currentStats, statsUpdate) => ({
 
 // --- Reducer and Initial State ---
 
-// Define the initial state structure clearly
 const initialState = {
   scores: { teamA: 0, teamB: 0 },
   setsWon: { teamA: 0, teamB: 0 },
+  setScores: [], // New state property to store scores at the end of each set
   currentServer: null,
   ballPossession: null,
   matchStarted: false,
@@ -125,6 +125,7 @@ const matchReducer = (state, action) => {
         ...state,
         scores: newScores,
         statistics: updatedStatistics,
+        currentServer: winner,
       };
     }
     case 'TIMEOUT':
@@ -144,54 +145,61 @@ const matchReducer = (state, action) => {
         },
       };
     case 'PROCESS_GAME_END': {
-        // This action handles all the complex set/match win logic within the reducer flow
-        const { maxSets, teams, navigateCallback, setParentMatchDataCallback } = action;
-        const scoreDifference = Math.abs(state.scores.teamA - state.scores.teamB);
-        const isTiebreakerSet = state.setsWon.teamA + state.setsWon.teamB === maxSets - 1;
-        const requiredPoints = isTiebreakerSet ? 15 : 25;
+      const { maxSets, teams, navigateCallback, setParentMatchDataCallback } = action;
+      const scoreDifference = Math.abs(state.scores.teamA - state.scores.teamB);
+      const isTiebreakerSet = state.setsWon.teamA + state.setsWon.teamB === maxSets - 1;
+      const requiredPoints = isTiebreakerSet ? 15 : 25;
 
-        let newSetsWon = { ...state.setsWon };
-        let newScores = { ...state.scores };
-        let matchEnded = false;
-        let setEnded = false;
+      let newSetsWon = { ...state.setsWon };
+      let newScores = { ...state.scores };
+      let matchEnded = false;
+      let setEnded = false;
+      const newSetScores = [...state.setScores, { teamA: state.scores.teamA, teamB: state.scores.teamB }];
 
-        if (state.scores.teamA >= requiredPoints && scoreDifference >= 2) {
-            newSetsWon.teamA += 1;
-            setEnded = true;
-        } else if (state.scores.teamB >= requiredPoints && scoreDifference >= 2) {
-            newSetsWon.teamB += 1;
-            setEnded = true;
+      if (state.scores.teamA >= requiredPoints && scoreDifference >= 2) {
+        newSetsWon.teamA += 1;
+        setEnded = true;
+      } else if (state.scores.teamB >= requiredPoints && scoreDifference >= 2) {
+        newSetsWon.teamB += 1;
+        setEnded = true;
+      }
+
+      if (setEnded) {
+        if (newSetsWon.teamA === Math.ceil(maxSets / 2) || newSetsWon.teamB === Math.ceil(maxSets / 2)) {
+          matchEnded = true;
         }
+        newScores = { teamA: 0, teamB: 0 };
+      }
 
-        if (setEnded) {
-            if (newSetsWon.teamA === Math.ceil(maxSets / 2) || newSetsWon.teamB === Math.ceil(maxSets / 2)) {
-                matchEnded = true;
-            }
-            newScores = { teamA: 0, teamB: 0 };
-        }
-        
-        // This is a side effect within the reducer action (not ideal React practice but necessary for navigation/external state sync)
-        if (matchEnded) {
-            alert(`${newSetsWon.teamA > newSetsWon.teamB ? teams.teamA : teams.teamB} wins the match!`);
-            navigateCallback('/');
-            // We return the initial state for clean up internally, but the navigation handles flow
-            setParentMatchDataCallback(initialState); // Ensure parent state is also cleared
-            return initialState;
-        } else if (setEnded) {
-            // Update internal state for new set
-            const newState = {
-                ...state,
-                scores: newScores,
-                setsWon: newSetsWon,
-                timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts at the start of a new set
-            };
+      if (matchEnded) {
+        alert(`${newSetsWon.teamA > newSetsWon.teamB ? teams.teamA : teams.teamB} wins the match!`);
+        // navigateCallback('/');
+        // setParentMatchDataCallback(initialState); // Ensure parent state is also cleared
+        // return initialState;
+          const newState = {
+            ...state,
+          scores: newScores,
+          setsWon: newSetsWon,
+          setScores: newSetScores, // Update setScores with the scores of the completed set
+          matchStarted: false, // disable action buttons
+          timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts at the start of a new set
+        };
             setParentMatchDataCallback(newState); // Sync with parent state
             return newState;
-        } else {
-            // No set/match end, just sync the current score changes to the parent state if needed
-            setParentMatchDataCallback(state);
-            return state; // Return current state unchanged
-        }
+      } else if (setEnded) {
+          const newState = {
+            ...state,
+          scores: newScores,
+          setsWon: newSetsWon,
+          setScores: newSetScores, // Update setScores with the scores of the completed set
+          timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts at the start of a new set
+        };
+            setParentMatchDataCallback(newState); // Sync with parent state
+            return newState;
+      } else {
+        setParentMatchDataCallback(state);
+        return state;
+      }
     }
     case 'RESET_MATCH':
       return initialState;
@@ -205,28 +213,20 @@ const matchReducer = (state, action) => {
 function Match({ matchDetails, matchData, setMatchData }) {
   const { teams, teamLogos, matchHeader, stadium, extendedInfo, maxSets } = matchDetails;
   const navigate = useNavigate();
-  // Using a local reducer for the active match state
   const [localMatchData, dispatch] = useReducer(matchReducer, matchData || initialState);
 
-  // Define callbacks that never change to pass to the reducer action without breaking rules
   const navigateCallback = useCallback((path) => navigate(path), [navigate]);
   const setParentMatchDataCallback = useCallback((data) => setMatchData(data), [setMatchData]);
 
-
-  // Effect hook to run the game end logic after a score update happens via the reducer
   useEffect(() => {
-    // This effect runs whenever scores change in localMatchData
     dispatch({
       type: 'PROCESS_GAME_END',
       maxSets,
       teams,
       navigateCallback,
-      setParentMatchDataCallback
+      setParentMatchDataCallback,
     });
-    // The dependency array now includes all variables used inside the effect, satisfying the linter.
-    // We *must* use localMatchData.scores and .setsWon here to ensure the effect runs only when points are scored/sets won.
   }, [localMatchData.scores, localMatchData.setsWon, maxSets, teams, navigateCallback, setParentMatchDataCallback]);
-
 
   const handleStartMatch = (server) => {
     dispatch({ type: 'START_MATCH', server });
@@ -238,18 +238,15 @@ function Match({ matchDetails, matchData, setMatchData }) {
 
   const handleRallyEnd = (winner, statsUpdate = {}) => {
     dispatch({ type: 'RALLY_END', winner, statsUpdate });
-    // The useEffect will pick up the score change from RALLY_END and process the set/match logic
   };
 
   const handleTimeout = (team) => {
     dispatch({ type: 'TIMEOUT', team });
-    // Timeouts don't trigger set end logic, so no need to rely on the effect here.
-    setParentMatchDataCallback(localMatchData); // Sync parent state immediately for timeouts
+    setParentMatchDataCallback(localMatchData);
   };
 
   const handleAdjustScore = (team, adjustment) => {
     dispatch({ type: 'ADJUST_SCORE', team, adjustment });
-    // The useEffect will pick up the score change from ADJUST_SCORE and process the set/match logic
   };
 
   return (
@@ -292,6 +289,12 @@ function Match({ matchDetails, matchData, setMatchData }) {
         matchStarted={localMatchData.matchStarted}
       />
       <Statistics teams={teams} statistics={localMatchData.statistics} />
+      <div>
+        <h2>Set Scores</h2>
+        {localMatchData.setScores.map((setScore, index) => (
+          <p key={index}>Set {index + 1}: Team A {setScore.teamA} - Team B {setScore.teamB}</p>
+        ))}
+      </div>
     </MatchContainer>
   );
 }

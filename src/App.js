@@ -45,6 +45,7 @@ function App() {
   const [matchData, setMatchData] = useState({
     scores: { teamA: 0, teamB: 0 },
     setsWon: { teamA: 0, teamB: 0 },
+    setScores: [],
     currentServer: null,
     ballPossession: null,
     matchStarted: false,
