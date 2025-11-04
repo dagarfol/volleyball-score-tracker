@@ -37,22 +37,22 @@ const calculatePercentage = (value, total) => {
 
 const Statistics = ({ teams, statistics }) => {
   const serviceEffectivenessA = calculatePercentage(
-    statistics.teamA.ace + statistics.teamB.receptionError,
+    statistics.teamA.ace - statistics.teamA.serveError,
     statistics.teamA.serve
   );
 
   const serviceEffectivenessB = calculatePercentage(
-    statistics.teamB.ace + statistics.teamA.receptionError,
+    statistics.teamB.ace - statistics.teamB.serveError,
     statistics.teamB.serve
   );
 
   const attackEffectivenessA = calculatePercentage(
-    statistics.teamA.attackPoint + statistics.teamB.digError,
+    statistics.teamA.attackPoint - statistics.teamA.attackError,
     statistics.teamA.attack
   );
 
   const attackEffectivenessB = calculatePercentage(
-    statistics.teamB.attackPoint + statistics.teamA.digError,
+    statistics.teamB.attackPoint - statistics.teamB.attackError,
     statistics.teamB.attack
   );
 
