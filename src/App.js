@@ -1,14 +1,47 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import styled from 'styled-components';
 import PreMatch from './components/PreMatch';
 import Match from './components/Match';
+
+// --- Styled Components ---
+
+const AppContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+`;
+
+const TabContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+`;
+
+const TabButton = styled.button`
+  padding: 10px 20px;
+  margin: 0 5px;
+  background-color: ${({ active }) => (active ? '#007bff' : '#ccc')};
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  &:hover {
+    background-color: ${({ active }) => (active ? '#0056b3' : '#bbb')};
+  }
+`;
 
 function App() {
   const [matchDetails, setMatchDetails] = useState({
     teams: { teamA: 'Team A', teamB: 'Team B' },
-    teamLogos: { 
-      teamA: 'https://www.todovoleibol.com/images/escudos/cv-alcala.jpg', 
-      teamB: 'https://www.todovoleibol.com/images/escudos/cv-fuenlabrada.jpg' 
+    teamLogos: {
+      teamA: 'https://www.todovoleibol.com/images/escudos/cv-alcala.jpg',
+      teamB: 'https://www.todovoleibol.com/images/escudos/cv-fuenlabrada.jpg'
     },
     matchHeader: 'CADETE - 1ª División Aut. Preferente',
     extendedInfo: 'Liga regular - Jornada 5',
@@ -86,25 +119,22 @@ function App() {
     },
   });
 
+  const [activeTab, setActiveTab] = useState('prematch');
+
   return (
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={<PreMatch setMatchDetails={setMatchDetails} matchDetails={matchDetails} />}
-        />
-        <Route
-          path="/match"
-          element={
-            <Match
-              matchDetails={matchDetails}
-              matchData={matchData}
-              setMatchData={setMatchData}
-            />
-          }
-        />
-      </Routes>
-    </Router>
+    <AppContainer>
+      <TabContainer>
+        <TabButton active={activeTab === 'prematch'} onClick={() => setActiveTab('prematch')}>
+          Pre-Match Setup
+        </TabButton>
+        <TabButton active={activeTab === 'match'} onClick={() => setActiveTab('match')}>
+          Match
+        </TabButton>
+      </TabContainer>
+
+      {activeTab === 'prematch' && <PreMatch setMatchDetails={setMatchDetails} matchDetails={matchDetails} />}
+      {activeTab === 'match' && <Match matchDetails={matchDetails} matchData={matchData} setMatchData={setMatchData} />}
+    </AppContainer>
   );
 }
 

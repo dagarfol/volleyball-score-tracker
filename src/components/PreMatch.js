@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const PreMatchContainer = styled.div`
@@ -23,15 +22,6 @@ const Select = styled.select`
   width: 100%;
 `;
 
-const Button = styled.button`
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  cursor: pointer;
-`;
-
 const StatInputs = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -45,8 +35,7 @@ const StatInput = styled.input`
   width: 100%;
 `;
 
-
-function PreMatch({ setMatchDetails, matchDetails }) {
+function PreMatch({ setMatchDetails, matchDetails, setActiveTab }) {
   const [teamA, setTeamA] = useState(matchDetails.teams.teamA);
   const [teamB, setTeamB] = useState(matchDetails.teams.teamB);
   const [teamALogo, setTeamALogo] = useState(matchDetails.teamLogos.teamA);
@@ -57,9 +46,9 @@ function PreMatch({ setMatchDetails, matchDetails }) {
   const [maxSets, setMaxSets] = useState(matchDetails.maxSets);
   const [statsA, setStatsA] = useState(matchDetails.stats.teamA);
   const [statsB, setStatsB] = useState(matchDetails.stats.teamB);
-  const navigate = useNavigate();
 
-  const handleStartMatch = () => {
+  // Update match details state whenever any input loses focus or selection changes
+  useEffect(() => {
     setMatchDetails({
       teams: { teamA, teamB },
       teamLogos: { teamA: teamALogo, teamB: teamBLogo },
@@ -67,15 +56,12 @@ function PreMatch({ setMatchDetails, matchDetails }) {
       stadium,
       extendedInfo,
       maxSets,
+      stats: {
+        teamA: statsA,
+        teamB: statsB,
+      },
     });
-    navigate('/match');
-  };
-
-  // Update local stats state when matchDetails prop changes (if any)
-  useEffect(() => {
-    setStatsA(matchDetails.stats.teamA);
-    setStatsB(matchDetails.stats.teamB);
-  }, [matchDetails.stats]);
+  }, [teamA, teamB, teamALogo, teamBLogo, matchHeader, stadium, extendedInfo, maxSets, statsA, statsB, setMatchDetails]);
 
   const handleStatChange = (team, stat, value) => {
     const intValue = parseInt(value, 10);
@@ -92,10 +78,6 @@ function PreMatch({ setMatchDetails, matchDetails }) {
     }
   };
 
-
-  const handleShowMatchup = () => {}
-  const handleShowTeamComparison = () => {}
-  
   const statFields = [
     { label: 'Ranking', key: 'ranking' },
     { label: 'Matches Played', key: 'matchesPlayed' },
@@ -118,6 +100,13 @@ function PreMatch({ setMatchDetails, matchDetails }) {
             type="number"
             value={stats[field.key]}
             onChange={(e) => handleStatChange(team, field.key, e.target.value)}
+            onBlur={() => setMatchDetails(prevDetails => ({
+              ...prevDetails,
+              stats: {
+                ...prevDetails.stats,
+                [team === 'A' ? 'teamA' : 'teamB']: stats,
+              },
+            }))}
           />
         </React.Fragment>
       ))}
@@ -132,42 +121,61 @@ function PreMatch({ setMatchDetails, matchDetails }) {
         placeholder="Match Header"
         value={matchHeader}
         onChange={(e) => setMatchHeader(e.target.value)}
+        onBlur={() => setMatchDetails(prevDetails => ({ ...prevDetails, matchHeader }))}
       />
       <Input
         type="text"
         placeholder="Extended Info"
         value={extendedInfo}
         onChange={(e) => setExtendedInfo(e.target.value)}
+        onBlur={() => setMatchDetails(prevDetails => ({ ...prevDetails, extendedInfo }))}
       />
       <Input
         type="text"
         placeholder="Stadium"
         value={stadium}
         onChange={(e) => setStadium(e.target.value)}
+        onBlur={() => setMatchDetails(prevDetails => ({ ...prevDetails, stadium }))}
       />
       <Input
         type="text"
         placeholder="Team A Name"
         value={teamA}
         onChange={(e) => setTeamA(e.target.value)}
+        onBlur={() => setMatchDetails(prevDetails => ({
+          ...prevDetails,
+          teams: { ...prevDetails.teams, teamA },
+        }))}
       />
       <Input
         type="text"
         placeholder="Team A Logo URL"
         value={teamALogo}
         onChange={(e) => setTeamALogo(e.target.value)}
+        onBlur={() => setMatchDetails(prevDetails => ({
+          ...prevDetails,
+          teamLogos: { ...prevDetails.teamLogos, teamA: teamALogo },
+        }))}
       />
       <Input
         type="text"
         placeholder="Team B Name"
         value={teamB}
         onChange={(e) => setTeamB(e.target.value)}
+        onBlur={() => setMatchDetails(prevDetails => ({
+          ...prevDetails,
+          teams: { ...prevDetails.teams, teamB },
+        }))}
       />
       <Input
         type="text"
         placeholder="Team B Logo URL"
         value={teamBLogo}
         onChange={(e) => setTeamBLogo(e.target.value)}
+        onBlur={() => setMatchDetails(prevDetails => ({
+          ...prevDetails,
+          teamLogos: { ...prevDetails.teamLogos, teamB: teamBLogo },
+        }))}
       />
       <h2>{teamA} Statistics (Team A)</h2>
       {renderStatInputs('A', statsA)}
@@ -175,13 +183,17 @@ function PreMatch({ setMatchDetails, matchDetails }) {
       <h2>{teamB} Statistics (Team B)</h2>
       {renderStatInputs('B', statsB)}
 
-      <Select value={maxSets} onChange={(e) => setMaxSets(parseInt(e.target.value, 10))}>
+      <Select
+        value={maxSets}
+        onChange={(e) => {
+          const newMaxSets = parseInt(e.target.value, 10);
+          setMaxSets(newMaxSets);
+          setMatchDetails(prevDetails => ({ ...prevDetails, maxSets: newMaxSets }));
+        }}
+      >
         <option value={3}>3 Sets</option>
         <option value={5}>5 Sets</option>
       </Select>
-      <Button onClick={handleShowMatchup}>Show Matchup</Button>
-      <Button onClick={handleShowTeamComparison}>Show Team Comparison</Button>
-      <Button onClick={handleStartMatch}>Start Match</Button>
     </PreMatchContainer>
   );
 }

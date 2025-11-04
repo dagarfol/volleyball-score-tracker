@@ -1,6 +1,5 @@
 import React, { useReducer, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 import ScoreBoard from './ScoreBoard';
 import RallyControl from './RallyControl';
 import Statistics from './Statistics';
@@ -17,17 +16,6 @@ const MatchContainer = styled.div`
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-`;
-
-const NavigationButton = styled.button`
-  margin-bottom: 20px;
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  &:hover { background-color: #0056b3; }
 `;
 
 const TimeoutContainer = styled.div`
@@ -145,7 +133,7 @@ const matchReducer = (state, action) => {
         },
       };
     case 'PROCESS_GAME_END': {
-      const { maxSets, teams, navigateCallback, setParentMatchDataCallback } = action;
+      const { maxSets, teams, setParentMatchDataCallback } = action;
       const scoreDifference = Math.abs(state.scores.teamA - state.scores.teamB);
       const isTiebreakerSet = state.setsWon.teamA + state.setsWon.teamB === maxSets - 1;
       const requiredPoints = isTiebreakerSet ? 15 : 25;
@@ -173,29 +161,26 @@ const matchReducer = (state, action) => {
 
       if (matchEnded) {
         alert(`${newSetsWon.teamA > newSetsWon.teamB ? teams.teamA : teams.teamB} wins the match!`);
-        // navigateCallback('/');
-        // setParentMatchDataCallback(initialState); // Ensure parent state is also cleared
-        // return initialState;
-          const newState = {
-            ...state,
+        const newState = {
+          ...state,
           scores: newScores,
           setsWon: newSetsWon,
           setScores: newSetScores, // Update setScores with the scores of the completed set
           matchStarted: false, // disable action buttons
           timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts at the start of a new set
         };
-            setParentMatchDataCallback(newState); // Sync with parent state
-            return newState;
+        setParentMatchDataCallback(newState); // Sync with parent state
+        return newState;
       } else if (setEnded) {
-          const newState = {
-            ...state,
+        const newState = {
+          ...state,
           scores: newScores,
           setsWon: newSetsWon,
           setScores: newSetScores, // Update setScores with the scores of the completed set
           timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts at the start of a new set
         };
-            setParentMatchDataCallback(newState); // Sync with parent state
-            return newState;
+        setParentMatchDataCallback(newState); // Sync with parent state
+        return newState;
       } else {
         setParentMatchDataCallback(state);
         return state;
@@ -210,12 +195,10 @@ const matchReducer = (state, action) => {
 
 // --- Main Match Component ---
 
-function Match({ matchDetails, matchData, setMatchData }) {
+function Match({ matchDetails, matchData, setMatchData, setActiveTab }) {
   const { teams, teamLogos, matchHeader, stadium, extendedInfo, maxSets } = matchDetails;
-  const navigate = useNavigate();
   const [localMatchData, dispatch] = useReducer(matchReducer, matchData || initialState);
 
-  const navigateCallback = useCallback((path) => navigate(path), [navigate]);
   const setParentMatchDataCallback = useCallback((data) => setMatchData(data), [setMatchData]);
 
   useEffect(() => {
@@ -223,10 +206,9 @@ function Match({ matchDetails, matchData, setMatchData }) {
       type: 'PROCESS_GAME_END',
       maxSets,
       teams,
-      navigateCallback,
       setParentMatchDataCallback,
     });
-  }, [localMatchData.scores, localMatchData.setsWon, maxSets, teams, navigateCallback, setParentMatchDataCallback]);
+  }, [localMatchData.scores, localMatchData.setsWon, maxSets, teams, setParentMatchDataCallback]);
 
   const handleStartMatch = (server) => {
     dispatch({ type: 'START_MATCH', server });
@@ -251,7 +233,6 @@ function Match({ matchDetails, matchData, setMatchData }) {
 
   return (
     <MatchContainer>
-      <NavigationButton onClick={() => navigate('/')}>Back to Pre-Match Setup</NavigationButton>
       <h1>{matchHeader}</h1>
       <p>Stadium: {stadium}</p>
       <p>Info: {extendedInfo}</p>
