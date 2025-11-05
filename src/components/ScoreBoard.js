@@ -31,6 +31,7 @@ const TeamScoreA = styled.div`
   border-radius: 8px;
   position: relative;
   border: ${({ isPossession }) => (isPossession ? '3px solid #32CD32' : 'none')}; /* Green border for possession */
+  text-align: center;
 `;
 
 const TeamScoreB = styled.div`
@@ -44,6 +45,7 @@ const TeamScoreB = styled.div`
   border-radius: 8px;
   position: relative;
   border: ${({ isPossession }) => (isPossession ? '3px solid #32CD32' : 'none')}; /* Green border for possession */
+  text-align: center;
 `;
 
 const ScoreNumberContainer = styled.div`

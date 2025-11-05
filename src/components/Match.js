@@ -195,7 +195,7 @@ const matchReducer = (state, action) => {
 
 // --- Main Match Component ---
 
-function Match({ matchDetails, matchData, setMatchData, setActiveTab }) {
+function Match({ matchDetails, matchData, setMatchData }) {
   const { teams, teamLogos, matchHeader, stadium, extendedInfo, maxSets } = matchDetails;
   const [localMatchData, dispatch] = useReducer(matchReducer, matchData || initialState);
 

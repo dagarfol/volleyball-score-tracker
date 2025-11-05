@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import PreMatch from './components/PreMatch';
 import Match from './components/Match';
+import { v4 as uuidv4 } from 'uuid';
+import Cookies from 'js-cookie';
+import io from 'socket.io-client';
+
 
 // --- Styled Components ---
 
@@ -38,7 +42,7 @@ const TabButton = styled.button`
 
 function App() {
   const [matchDetails, setMatchDetails] = useState({
-    teams: { teamA: 'Team A', teamB: 'Team B' },
+    teams: { teamA: 'CV Alcala Glauka Viajes', teamB: 'CV el otro con patrocinador' },
     teamLogos: {
       teamA: 'https://www.todovoleibol.com/images/escudos/cv-alcala.jpg',
       teamB: 'https://www.todovoleibol.com/images/escudos/cv-fuenlabrada.jpg'
@@ -46,6 +50,7 @@ function App() {
     matchHeader: 'CADETE - 1ª División Aut. Preferente',
     extendedInfo: 'Liga regular - Jornada 5',
     stadium: 'Pabellón Demetrio Lozano, Alcalá de Henares',
+    competitionLogo: 'https://fmvoley.com/images/logo.svg',
     maxSets: 5,
     stats: {
       teamA: {
@@ -76,50 +81,71 @@ function App() {
   });
 
   const [matchData, setMatchData] = useState({
-    scores: { teamA: 0, teamB: 0 },
-    setsWon: { teamA: 0, teamB: 0 },
-    setScores: [],
-    currentServer: null,
-    ballPossession: null,
-    matchStarted: false,
-    timeouts: { teamA: 0, teamB: 0 }, // Initialize timeouts here
-    statistics: {
-      teamA: {
-        serve: 0,
-        ace: 0,
-        serveError: 0,
-        reception: 0,
-        receptionError: 0,
-        dig: 0,
-        digError: 0,
-        attack: 0,
-        attackPoint: 0,
-        attackError: 0,
-        block: 0,
-        blockPoint: 0,
-        blockOut: 0,
-        fault: 0,
-      },
-      teamB: {
-        serve: 0,
-        ace: 0,
-        serveError: 0,
-        reception: 0,
-        receptionError: 0,
-        dig: 0,
-        digError: 0,
-        attack: 0,
-        attackPoint: 0,
-        attackError: 0,
-        block: 0,
-        blockPoint: 0,
-        blockOut: 0,
-        fault: 0,
-      },
-    },
+  scores: { teamA: 0, teamB: 0 },
+  setsWon: { teamA: 0, teamB: 0 },
+  setScores: [],//{ teamA: 0, teamB: 0 },],
+  currentServer: '',
+  ballPossession: '',
+  matchStarted: false,
+  timeouts: { teamA: 0, teamB: 0 },
+  statistics: {
+    teamA: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0 },
+    teamB: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0 },
+  },
+  winner: '',
+  matchEvent: {
+    timestamp: Date.now(),
+    type: null,
+    details: null,
+  },
   });
 
   const [activeTab, setActiveTab] = useState('prematch');
+  const [socket, setSocket] = useState(null);
+  const [key, setKey] = useState(() => {
+    // Load the key from a cookie or generate a new UUID
+    const existingKey = Cookies.get('websocket-key');
+    if (existingKey) {
+      return existingKey;
+    } else {
+      const newKey = uuidv4();
+      Cookies.set('websocket-key', newKey, { expires: 365 }); // Store the key in a cookie for 1 year
+      return newKey;
+    }
+  });
+
+  useEffect(() => {
+    // Connect to the Socket.io server using the key
+    const socketInstance = io('http://localhost:3005', {
+      query: { key },
+    });
+
+    socketInstance.on('connect', () => {
+      console.log('Socket.io connection established');
+    });
+
+    socketInstance.on('message', (data) => {
+      console.log('Message received:', data);
+    });
+
+    socketInstance.on('disconnect', () => {
+      console.log('Socket.io connection closed');
+    });
+
+    socketInstance.on('error', (error) => {
+      console.error('Socket.io error:', error);
+    });
+
+    setSocket(socketInstance);
+
+    // Cleanup function to disconnect the socket when the component unmounts
+    return () => {
+      if (socketInstance) {
+        socketInstance.disconnect();
+      }
+    };
+  }, [key]);
+
 
   return (
     <AppContainer>
@@ -130,10 +156,14 @@ function App() {
         <TabButton active={activeTab === 'match'} onClick={() => setActiveTab('match')}>
           Match
         </TabButton>
+        <TabButton active={activeTab === 'controls'} onClick={() => setActiveTab('controls')}>
+          Controls
+        </TabButton>
       </TabContainer>
 
-      {activeTab === 'prematch' && <PreMatch setMatchDetails={setMatchDetails} matchDetails={matchDetails} />}
-      {activeTab === 'match' && <Match matchDetails={matchDetails} matchData={matchData} setMatchData={setMatchData} />}
+      {activeTab === 'prematch' && <PreMatch setMatchDetails={setMatchDetails} matchDetails={matchDetails} socket={socket} />}
+      {activeTab === 'match' && <Match matchDetails={matchDetails} matchData={matchData} setMatchData={setMatchData} socket={socket} />}
+      {/* {activeTab === 'controls' && <Controls matchDetails={matchDetails} matchData={matchData} setMatchData={setMatchData} />} */}
     </AppContainer>
   );
 }

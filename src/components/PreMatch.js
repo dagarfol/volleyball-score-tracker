@@ -10,6 +10,16 @@ const PreMatchContainer = styled.div`
   margin: auto;
 `;
 
+const ImageSelector = styled.div`
+  display: flex;
+  width: 100%;
+  gap: 5px;
+`;
+
+const ImagePreview = styled.img`
+  width: 100px;
+`;
+
 const Input = styled.input`
   margin: 10px 0;
   padding: 8px;
@@ -35,7 +45,7 @@ const StatInput = styled.input`
   width: 100%;
 `;
 
-function PreMatch({ setMatchDetails, matchDetails, setActiveTab }) {
+function PreMatch({ setMatchDetails, matchDetails, socket }) {
   const [teamA, setTeamA] = useState(matchDetails.teams.teamA);
   const [teamB, setTeamB] = useState(matchDetails.teams.teamB);
   const [teamALogo, setTeamALogo] = useState(matchDetails.teamLogos.teamA);
@@ -43,25 +53,34 @@ function PreMatch({ setMatchDetails, matchDetails, setActiveTab }) {
   const [matchHeader, setMatchHeader] = useState(matchDetails.matchHeader);
   const [stadium, setStadium] = useState(matchDetails.stadium);
   const [extendedInfo, setExtendedInfo] = useState(matchDetails.extendedInfo);
+  const [competitionLogo, setCompetitionLogo] = useState(matchDetails.competitionLogo);
   const [maxSets, setMaxSets] = useState(matchDetails.maxSets);
   const [statsA, setStatsA] = useState(matchDetails.stats.teamA);
   const [statsB, setStatsB] = useState(matchDetails.stats.teamB);
 
   // Update match details state whenever any input loses focus or selection changes
   useEffect(() => {
-    setMatchDetails({
+    const updatedMatchDetails = {
       teams: { teamA, teamB },
       teamLogos: { teamA: teamALogo, teamB: teamBLogo },
       matchHeader,
       stadium,
       extendedInfo,
+      competitionLogo,
       maxSets,
       stats: {
         teamA: statsA,
         teamB: statsB,
       },
-    });
-  }, [teamA, teamB, teamALogo, teamBLogo, matchHeader, stadium, extendedInfo, maxSets, statsA, statsB, setMatchDetails]);
+    };
+
+    setMatchDetails(updatedMatchDetails);
+
+    // Emit the updated match details to the server via the socket
+    if (socket) {
+      socket.emit('matchDetails', updatedMatchDetails);
+    }
+  }, [teamA, teamB, teamALogo, teamBLogo, matchHeader, stadium, extendedInfo, competitionLogo, maxSets, statsA, statsB, setMatchDetails, socket]);
 
   const handleStatChange = (team, stat, value) => {
     const intValue = parseInt(value, 10);
@@ -100,13 +119,6 @@ function PreMatch({ setMatchDetails, matchDetails, setActiveTab }) {
             type="number"
             value={stats[field.key]}
             onChange={(e) => handleStatChange(team, field.key, e.target.value)}
-            onBlur={() => setMatchDetails(prevDetails => ({
-              ...prevDetails,
-              stats: {
-                ...prevDetails.stats,
-                [team === 'A' ? 'teamA' : 'teamB']: stats,
-              },
-            }))}
           />
         </React.Fragment>
       ))}
@@ -121,79 +133,75 @@ function PreMatch({ setMatchDetails, matchDetails, setActiveTab }) {
         placeholder="Match Header"
         value={matchHeader}
         onChange={(e) => setMatchHeader(e.target.value)}
-        onBlur={() => setMatchDetails(prevDetails => ({ ...prevDetails, matchHeader }))}
       />
       <Input
         type="text"
         placeholder="Extended Info"
         value={extendedInfo}
         onChange={(e) => setExtendedInfo(e.target.value)}
-        onBlur={() => setMatchDetails(prevDetails => ({ ...prevDetails, extendedInfo }))}
       />
       <Input
         type="text"
         placeholder="Stadium"
         value={stadium}
         onChange={(e) => setStadium(e.target.value)}
-        onBlur={() => setMatchDetails(prevDetails => ({ ...prevDetails, stadium }))}
       />
+      <Select
+        value={maxSets}
+        onChange={(e) => {
+          const newMaxSets = parseInt(e.target.value, 10);
+          setMaxSets(newMaxSets);
+        }}
+      >
+        <option value={3}>3 Sets</option>
+        <option value={5}>5 Sets</option>
+      </Select>
+      <ImageSelector>
+        <Input
+          type="text"
+          placeholder="Competition logo"
+          value={competitionLogo}
+          onChange={(e) => setCompetitionLogo(e.target.value)}
+        />
+        <ImagePreview src={competitionLogo}></ImagePreview>
+      </ImageSelector>
       <Input
         type="text"
         placeholder="Team A Name"
         value={teamA}
         onChange={(e) => setTeamA(e.target.value)}
-        onBlur={() => setMatchDetails(prevDetails => ({
-          ...prevDetails,
-          teams: { ...prevDetails.teams, teamA },
-        }))}
       />
-      <Input
-        type="text"
-        placeholder="Team A Logo URL"
-        value={teamALogo}
-        onChange={(e) => setTeamALogo(e.target.value)}
-        onBlur={() => setMatchDetails(prevDetails => ({
-          ...prevDetails,
-          teamLogos: { ...prevDetails.teamLogos, teamA: teamALogo },
-        }))}
-      />
+      <ImageSelector>
+        <Input
+          type="text"
+          placeholder="Team A Logo URL"
+          value={teamALogo}
+          onChange={(e) => setTeamALogo(e.target.value)}
+        />
+        <ImagePreview src={teamALogo}></ImagePreview>
+      </ImageSelector>
       <Input
         type="text"
         placeholder="Team B Name"
         value={teamB}
         onChange={(e) => setTeamB(e.target.value)}
-        onBlur={() => setMatchDetails(prevDetails => ({
-          ...prevDetails,
-          teams: { ...prevDetails.teams, teamB },
-        }))}
       />
-      <Input
-        type="text"
-        placeholder="Team B Logo URL"
-        value={teamBLogo}
-        onChange={(e) => setTeamBLogo(e.target.value)}
-        onBlur={() => setMatchDetails(prevDetails => ({
-          ...prevDetails,
-          teamLogos: { ...prevDetails.teamLogos, teamB: teamBLogo },
-        }))}
-      />
+      <ImageSelector>
+        <Input
+          type="text"
+          placeholder="Team B Logo URL"
+          value={teamBLogo}
+          onChange={(e) => setTeamBLogo(e.target.value)}
+        />
+        <ImagePreview src={teamBLogo}></ImagePreview>
+      </ImageSelector>
       <h2>{teamA} Statistics (Team A)</h2>
       {renderStatInputs('A', statsA)}
 
       <h2>{teamB} Statistics (Team B)</h2>
       {renderStatInputs('B', statsB)}
 
-      <Select
-        value={maxSets}
-        onChange={(e) => {
-          const newMaxSets = parseInt(e.target.value, 10);
-          setMaxSets(newMaxSets);
-          setMatchDetails(prevDetails => ({ ...prevDetails, maxSets: newMaxSets }));
-        }}
-      >
-        <option value={3}>3 Sets</option>
-        <option value={5}>5 Sets</option>
-      </Select>
+
     </PreMatchContainer>
   );
 }
