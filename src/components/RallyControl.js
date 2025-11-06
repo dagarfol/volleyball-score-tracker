@@ -33,6 +33,10 @@ const StyledButton = styled.button`
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   font-size: 1em;
   opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
+  border-radius: 5px;
+  cursor: pointer;
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:hover:enabled { background-color: #302414ff; }
 `;
 
 const initialState = {
@@ -94,7 +98,19 @@ function reducer(state, action) {
     case 'TOGGLE_DISCARD_CONFIRMATION':
       return { ...state, showDiscardConfirmation: action.payload };
     case 'RESET_STATS':
-      return { ...state, statsUpdate: initialState.statsUpdate, actionHistory: [], rallyStage: 'start' };
+      return {
+        ...state,
+        statsUpdate: {
+          teamA: {
+            serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0,
+          },
+          teamB: {
+            serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0,
+          },
+        },
+        actionHistory: [],
+        rallyStage: 'start'
+      };
     default:
       return state;
   }
@@ -119,41 +135,41 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
     switch (action) {
       case 'serve':
         newStatsUpdate[team].serve += 1;
-        dispatch({ type: 'SET_RALLY_STAGE', payload: 'afterServe' });
         dispatch({ type: 'ADD_ACTION', payload: { action, team, rallyStage: state.rallyStage } });
+        dispatch({ type: 'SET_RALLY_STAGE', payload: 'afterServe' });
         break;
       case 'reception':
         newStatsUpdate[opposingTeam].reception += 1;
+        dispatch({ type: 'ADD_ACTION', payload: { action, team: opposingTeam, rallyStage: state.rallyStage } });
         dispatch({ type: 'SET_POSSESSION', payload: opposingTeam });
         updateBallPossession(opposingTeam);
         dispatch({ type: 'SET_RALLY_STAGE', payload: 'afterReception' });
-        dispatch({ type: 'ADD_ACTION', payload: { action, team: opposingTeam, rallyStage: state.rallyStage } });
         break;
       case 'attack':
         newStatsUpdate[team].attack += 1;
-        dispatch({ type: 'SET_RALLY_STAGE', payload: 'afterAttack' });
         dispatch({ type: 'ADD_ACTION', payload: { action, team, rallyStage: state.rallyStage } });
+        dispatch({ type: 'SET_RALLY_STAGE', payload: 'afterAttack' });
         break;
       case 'block':
         newStatsUpdate[opposingTeam].block += 1;
+        dispatch({ type: 'ADD_ACTION', payload: { action, team: opposingTeam, rallyStage: state.rallyStage } });
         dispatch({ type: 'SET_POSSESSION', payload: opposingTeam });
         updateBallPossession(opposingTeam);
         dispatch({ type: 'SET_RALLY_STAGE', payload: 'afterBlock' });
-        dispatch({ type: 'ADD_ACTION', payload: { action, team: opposingTeam, rallyStage: state.rallyStage } });
         break;
       case 'continue':
-        dispatch({ type: 'SET_RALLY_STAGE', payload: 'afterReception' });
         dispatch({ type: 'ADD_ACTION', payload: { action, team, rallyStage: state.rallyStage } });
+        dispatch({ type: 'SET_RALLY_STAGE', payload: 'afterReception' });
         break;
       case 'dig':
         newStatsUpdate[opposingTeam].dig += 1;
         if (state.rallyStage === 'afterBlock') {
           newStatsUpdate[team].attack += 1;
         }
+        dispatch({ type: 'ADD_ACTION', payload: { action, team: opposingTeam, rallyStage: state.rallyStage } });
         dispatch({ type: 'SET_POSSESSION', payload: opposingTeam });
         updateBallPossession(opposingTeam);
         dispatch({ type: 'SET_RALLY_STAGE', payload: 'afterDig' });
-        dispatch({ type: 'ADD_ACTION', payload: { action, team: opposingTeam, rallyStage: state.rallyStage } });
         break;
       case 'error':
         if (state.rallyStage === 'afterServe') {
@@ -167,18 +183,18 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         } else if (state.rallyStage === 'afterBlock') {
           newStatsUpdate[team].blockOut += 1;
         }
+        dispatch({ type: 'ADD_ACTION', payload: { action, team, rallyStage: state.rallyStage, previousPossession: state.currentPossession } });
         dispatch({ type: 'SET_POSSESSION', payload: opposingTeam });
         updateBallPossession(opposingTeam);
         dispatch({ type: 'TOGGLE_CONFIRMATION', payload: true });
-        dispatch({ type: 'ADD_ACTION', payload: { action, team, rallyStage: state.rallyStage, previousPossession: state.currentPossession } });
         break;
       case 'fault':
         newStatsUpdate[faultingTeam].fault += 1;
         const teamAwarded = faultingTeam === 'teamA' ? 'teamB' : 'teamA';
+        dispatch({ type: 'ADD_ACTION', payload: { action, team: faultingTeam, rallyStage: state.rallyStage, previousPossession: state.currentPossession } });
         dispatch({ type: 'SET_POSSESSION', payload: teamAwarded });
         updateBallPossession(teamAwarded);
         dispatch({ type: 'TOGGLE_CONFIRMATION', payload: true });
-        dispatch({ type: 'ADD_ACTION', payload: { action, team: teamAwarded, rallyStage: state.rallyStage, previousPossession: state.currentPossession } });
         break;
       case 'point':
         if (state.rallyStage === 'afterServe') {
@@ -269,7 +285,9 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
   };
 
   const handleEndRally = () => {
-    onRallyEnd(state.currentPossession, state.statsUpdate);
+    const lastAction = state.actionHistory[state.actionHistory.length - 1];
+    const faultingTeam = lastAction?.action === 'fault' ? lastAction.team : null;
+    onRallyEnd(state.currentPossession, state.statsUpdate, faultingTeam);
     dispatch({ type: 'RESET_STATS' });
     dispatch({ type: 'TOGGLE_CONFIRMATION', payload: false });
   };
@@ -286,7 +304,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
   const confirmDiscardRally = () => {
     dispatch({ type: 'RESET_STATS' });
     dispatch({ type: 'SET_POSSESSION', payload: initialPossession.current });
-    updateBallPossession(initialPossession.current);
+    updateBallPossession(initialPossession.current, true);
     dispatch({ type: 'TOGGLE_DISCARD_CONFIRMATION', payload: false });
   };
 

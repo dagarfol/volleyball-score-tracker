@@ -89,6 +89,11 @@ const initialState = {
     teamA: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0 },
     teamB: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0 },
   },
+    winner: '',
+    matchEvent: {
+      type: null,
+      details: null,
+    },
 };
 
 const matchReducer = (state, action) => {
@@ -101,28 +106,33 @@ const matchReducer = (state, action) => {
         matchStarted: true,
       };
     case 'UPDATE_BALL_POSSESSION':
-      return { ...state, ballPossession: action.newPossession };
+      const matchEvent = action.rallyDiscarded ? { type: 'referee-call', details: { text: 'Se repite el punto' } } : state.matchEvent;
+      return { ...state, ballPossession: action.newPossession , matchEvent};
     case 'RALLY_END': {
-      const { winner, statsUpdate } = action;
+      const { winner, statsUpdate, faultingTeam, teams } = action;
       const newScores = {
         ...state.scores,
         [winner]: state.scores[winner] + 1,
       };
       const updatedStatistics = calculateUpdatedStatistics(state.statistics, statsUpdate);
+      const matchEvent = faultingTeam ? { type: 'referee-call', details: { text: 'Falta', team: teams[faultingTeam] } } : state.matchEvent;
       return {
         ...state,
         scores: newScores,
         statistics: updatedStatistics,
         currentServer: winner,
+        matchEvent,
       };
     }
     case 'TIMEOUT':
+      const { teams } = action;
       return {
         ...state,
         timeouts: {
           ...state.timeouts,
           [action.team]: state.timeouts[action.team] + 1,
         },
+        matchEvent: {type: 'timeout', details: { text: 'Tiempo muerto', team: teams[action.team] }}
       };
     case 'ADJUST_SCORE':
       return {
@@ -160,14 +170,16 @@ const matchReducer = (state, action) => {
       }
 
       if (matchEnded) {
-        alert(`${newSetsWon.teamA > newSetsWon.teamB ? teams.teamA : teams.teamB} wins the match!`);
+        const winner = newSetsWon.teamA > newSetsWon.teamB ? teams.teamA : teams.teamB
+        alert(`${winner} ha ganado el partido!`);
         const newState = {
           ...state,
-          scores: newScores,
+          // scores: newScores,
           setsWon: newSetsWon,
           setScores: newSetScores, // Update setScores with the scores of the completed set
           matchStarted: false, // disable action buttons
           timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts at the start of a new set
+          winner,
         };
         setParentMatchDataCallback(newState); // Sync with parent state
         return newState;
@@ -195,11 +207,21 @@ const matchReducer = (state, action) => {
 
 // --- Main Match Component ---
 
-function Match({ matchDetails, matchData, setMatchData }) {
+function Match({ matchDetails, matchData, setMatchData, socket }) {
   const { teams, teamLogos, matchHeader, stadium, extendedInfo, maxSets } = matchDetails;
   const [localMatchData, dispatch] = useReducer(matchReducer, matchData || initialState);
 
-  const setParentMatchDataCallback = useCallback((data) => setMatchData(data), [setMatchData]);
+  const setParentMatchDataCallback = useCallback((data) => {
+    // Emit the updated match details to the server via the socket
+    if (socket) {
+      socket.emit('matchData', data);
+    }
+    data.matchEvent = {
+      type: null,
+      details: null,
+    }
+    setMatchData(data);
+  }, [setMatchData, socket]);
 
   useEffect(() => {
     dispatch({
@@ -208,23 +230,22 @@ function Match({ matchDetails, matchData, setMatchData }) {
       teams,
       setParentMatchDataCallback,
     });
-  }, [localMatchData.scores, localMatchData.setsWon, maxSets, teams, setParentMatchDataCallback]);
+  }, [localMatchData.scores, localMatchData.setsWon, maxSets, teams, setParentMatchDataCallback, localMatchData.currentServer, localMatchData.timeouts, localMatchData.winner, localMatchData.matchEvent]);
 
   const handleStartMatch = (server) => {
     dispatch({ type: 'START_MATCH', server });
   };
 
-  const updateBallPossession = (newPossession) => {
-    dispatch({ type: 'UPDATE_BALL_POSSESSION', newPossession });
+  const updateBallPossession = (newPossession, rallyDiscarded = null) => {
+    dispatch({ type: 'UPDATE_BALL_POSSESSION', newPossession, rallyDiscarded });
   };
 
-  const handleRallyEnd = (winner, statsUpdate = {}) => {
-    dispatch({ type: 'RALLY_END', winner, statsUpdate });
+  const handleRallyEnd = (winner, statsUpdate = {}, faultingTeam = null) => {
+    dispatch({ type: 'RALLY_END', winner, statsUpdate, faultingTeam, teams });
   };
 
   const handleTimeout = (team) => {
-    dispatch({ type: 'TIMEOUT', team });
-    setParentMatchDataCallback(localMatchData);
+    dispatch({ type: 'TIMEOUT', team, teams });
   };
 
   const handleAdjustScore = (team, adjustment) => {

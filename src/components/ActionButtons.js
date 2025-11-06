@@ -37,6 +37,19 @@ const ActionButton = styled.button`
   font-size: 1em;
   opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
   visibility: ${({ visible }) => (visible ? 'visible' : 'hidden')};
+  border-radius: 5px;
+  cursor: pointer;
+  &:hover:enabled {   background-color: ${({ type }) => {
+    switch (type) {
+      case 'point':
+        return '#ebce2fff'; // Gold for points
+      case 'error':
+        return '#e04e2dff'; // Orange for errors
+      default:
+        return '#45a049'; // Green for general actions
+    }
+  }};
+ }
 `;
 
 const FixedButtonContainer = styled.div`

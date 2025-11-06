@@ -11,7 +11,7 @@ const FaultButtonContainer = styled.div`
 const FaultButton = styled.button`
   margin: 5px;
   padding: 10px 20px;
-  background-color: ${({ type, disabled }) => {
+  background-color: ${({ disabled }) => {
     if (disabled) {
       return '#ccc'; // Gray for disabled buttons
     }
@@ -22,6 +22,10 @@ const FaultButton = styled.button`
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   font-size: 1em;
   opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
+  border-radius: 5px;
+  cursor: pointer;
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:hover:enabled { background-color: #df3b00ff; }
 `;
 
 function FaultButtons({ teams, currentServer, handleAction }) {

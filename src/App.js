@@ -40,6 +40,19 @@ const TabButton = styled.button`
   }
 `;
 
+const OpenLinkButton = styled.button`
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  &:hover {
+    background-color: #45a049;
+  }
+`;
+
 function App() {
   const [matchDetails, setMatchDetails] = useState({
     teams: { teamA: 'CV Alcala Glauka Viajes', teamB: 'CV el otro con patrocinador' },
@@ -81,23 +94,22 @@ function App() {
   });
 
   const [matchData, setMatchData] = useState({
-  scores: { teamA: 0, teamB: 0 },
-  setsWon: { teamA: 0, teamB: 0 },
-  setScores: [],//{ teamA: 0, teamB: 0 },],
-  currentServer: '',
-  ballPossession: '',
-  matchStarted: false,
-  timeouts: { teamA: 0, teamB: 0 },
-  statistics: {
-    teamA: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0 },
-    teamB: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0 },
-  },
-  winner: '',
-  matchEvent: {
-    timestamp: Date.now(),
-    type: null,
-    details: null,
-  },
+    scores: { teamA: 0, teamB: 0 },
+    setsWon: { teamA: 0, teamB: 0 },
+    setScores: [],//{ teamA: 0, teamB: 0 },],
+    currentServer: '',
+    ballPossession: '',
+    matchStarted: false,
+    timeouts: { teamA: 0, teamB: 0 },
+    statistics: {
+      teamA: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0 },
+      teamB: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0 },
+    },
+    winner: '',
+    matchEvent: {
+      type: null,
+      details: null,
+    },
   });
 
   const [activeTab, setActiveTab] = useState('prematch');
@@ -146,6 +158,10 @@ function App() {
     };
   }, [key]);
 
+  const openOtherApp = () => {
+    const otherAppUrl = `http://localhost:3001?key=${key}`;
+    window.open(otherAppUrl, '_blank');
+  };
 
   return (
     <AppContainer>
@@ -159,6 +175,9 @@ function App() {
         <TabButton active={activeTab === 'controls'} onClick={() => setActiveTab('controls')}>
           Controls
         </TabButton>
+      <OpenLinkButton onClick={openOtherApp}>
+        Open Other App
+      </OpenLinkButton>
       </TabContainer>
 
       {activeTab === 'prematch' && <PreMatch setMatchDetails={setMatchDetails} matchDetails={matchDetails} socket={socket} />}
