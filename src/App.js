@@ -1,11 +1,12 @@
+// app.js
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import PreMatch from './components/PreMatch';
 import Match from './components/Match';
-import { v4 as uuidv4 } from 'uuid';
+import Controls from './components/Controls';
 import Cookies from 'js-cookie';
 import io from 'socket.io-client';
-
+import ShortUUID from 'short-uuid';
 
 // --- Styled Components ---
 
@@ -55,6 +56,27 @@ const OpenLinkButton = styled.button`
 
 const SOCKET_SERVER_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:3005';
 const OVERLAY_URL = process.env.REACT_APP_OVERLAY_URL || 'http://localhost:3001';
+
+const initialConfig = {
+  scoreboard: {
+    enabled: false,
+    type: 'classic',
+    position: 'top',
+  },
+  matchup: {
+    enabled: false,
+  },
+  lowerThird: {
+    enabled: false,
+  },
+  teamComparison: {
+    enabled: false,
+  },
+  afterMatch: {
+    enabled: false,
+    showStats: true,
+  },
+};
 
 function App() {
   const [matchDetails, setMatchDetails] = useState({
@@ -117,13 +139,16 @@ function App() {
 
   const [activeTab, setActiveTab] = useState('prematch');
   const [socket, setSocket] = useState(null);
+  const [config, setConfig] = useState(initialConfig);
+
   const [key] = useState(() => {
-    // Load the key from a cookie or generate a new UUID
+    // Load the key from a cookie or generate a new short UUID
     const existingKey = Cookies.get('websocket-key');
     if (existingKey) {
       return existingKey;
     } else {
-      const newKey = uuidv4();
+      const translator = ShortUUID();
+      const newKey = translator.new(); 
       Cookies.set('websocket-key', newKey, { expires: 365 }); // Store the key in a cookie for 1 year
       return newKey;
     }
@@ -185,7 +210,7 @@ function App() {
 
       {activeTab === 'prematch' && <PreMatch setMatchDetails={setMatchDetails} matchDetails={matchDetails} socket={socket} />}
       {activeTab === 'match' && <Match matchDetails={matchDetails} matchData={matchData} setMatchData={setMatchData} socket={socket} />}
-      {/* {activeTab === 'controls' && <Controls matchDetails={matchDetails} matchData={matchData} setMatchData={setMatchData} />} */}
+      {activeTab === 'controls' && <Controls socket={socket} config={config} setConfig={setConfig} />}
     </AppContainer>
   );
 }
