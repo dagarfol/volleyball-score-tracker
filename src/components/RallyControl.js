@@ -116,16 +116,22 @@ function reducer(state, action) {
   }
 }
 
-function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, updateBallPossession, matchStarted }) {
-  const [state, dispatch] = useReducer(reducer, { ...initialState, currentPossession: ballPossession });
-  const initialPossession = useRef(ballPossession);
+function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, updateBallPossession, onRallyStageChange }) {
+  const [state, dispatch] = useReducer(reducer, { ...initialState, currentPossession: currentServer });
+  const initialPossession = useRef(currentServer);
 
   useEffect(() => {
     dispatch({ type: 'SET_POSSESSION', payload: ballPossession });
-    if (!initialPossession.current) {
-      initialPossession.current = ballPossession;
-    }
   }, [ballPossession]);
+
+    useEffect(() => {
+    // Update initial possession whenever currentServer changes
+    initialPossession.current = currentServer;
+  }, [currentServer]);
+
+  useEffect(() => {
+    onRallyStageChange(state.rallyStage);
+  }, [state.rallyStage, onRallyStageChange]);
 
   const handleAction = (action, faultingTeam = null) => {
     const team = state.currentPossession;

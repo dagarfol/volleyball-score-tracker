@@ -9,10 +9,6 @@ const ScoreBoardContainer = styled.div`
   margin-bottom: 20px;
 `;
 
-const TeamButton = styled.button`
-  margin: 5px;
-`;
-
 const ScoresContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -93,15 +89,14 @@ const ScoreAdjustButton = styled.button`
   color: white;
   border: none;
   cursor: pointer;
+  border-radius: 5px;
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:hover:enabled { background-color: #45a049; }
 `;
 
-function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPossession, onStartMatch, matchStarted, onAdjustScore }) {
+function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPossession, matchStarted, onAdjustScore }) {
   return (
     <ScoreBoardContainer>
-      <div>
-        <TeamButton onClick={() => onStartMatch('teamA')} disabled={matchStarted}>Team A Serves</TeamButton>
-        <TeamButton onClick={() => onStartMatch('teamB')} disabled={matchStarted}>Team B Serves</TeamButton>
-      </div>
       <ScoresContainer>
         <TeamScoreA isPossession={ballPossession === 'teamA'}>
           <div>
@@ -110,8 +105,8 @@ function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPoss
           </div>
           <ScoreNumberContainer>
             <ScoreAdjustContainer>
-              <ScoreAdjustButton onClick={() => onAdjustScore('teamA', 1)}>+</ScoreAdjustButton>
-              <ScoreAdjustButton onClick={() => onAdjustScore('teamA', -1)}>-</ScoreAdjustButton>
+              <ScoreAdjustButton disabled={!matchStarted} onClick={() => onAdjustScore('teamA', 1)}>+</ScoreAdjustButton>
+              <ScoreAdjustButton disabled={!matchStarted} onClick={() => onAdjustScore('teamA', -1)}>-</ScoreAdjustButton>
             </ScoreAdjustContainer>
             <ScoreNumber>{scores.teamA}</ScoreNumber>
           </ScoreNumberContainer>
@@ -126,8 +121,8 @@ function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPoss
           <ScoreNumberContainer>
             <ScoreNumber>{scores.teamB}</ScoreNumber>
             <ScoreAdjustContainer>
-              <ScoreAdjustButton onClick={() => onAdjustScore('teamB', 1)}>+</ScoreAdjustButton>
-              <ScoreAdjustButton onClick={() => onAdjustScore('teamB', -1)}>-</ScoreAdjustButton>
+              <ScoreAdjustButton disabled={!matchStarted} onClick={() => onAdjustScore('teamB', 1)}>+</ScoreAdjustButton>
+              <ScoreAdjustButton disabled={!matchStarted} onClick={() => onAdjustScore('teamB', -1)}>-</ScoreAdjustButton>
             </ScoreAdjustContainer>
           </ScoreNumberContainer>
           <SetsWon>Sets Won: {setsWon.teamB}</SetsWon>

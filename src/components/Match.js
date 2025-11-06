@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useCallback } from 'react';
+import React, { useReducer, useEffect, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import ScoreBoard from './ScoreBoard';
 import RallyControl from './RallyControl';
@@ -16,6 +16,10 @@ const MatchContainer = styled.div`
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+`;
+
+const TeamButton = styled.button`
+  margin: 5px;
 `;
 
 const TimeoutContainer = styled.div`
@@ -37,7 +41,6 @@ const TimeoutButton = styled.button`
   &:disabled { opacity: 0.6; cursor: not-allowed; }
   &:hover:enabled { background-color: #e68900; }
 `;
-
 // --- Helper Functions ---
 
 const calculateUpdatedStatistics = (currentStats, statsUpdate) => ({
@@ -89,11 +92,11 @@ const initialState = {
     teamA: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0 },
     teamB: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0 },
   },
-    winner: '',
-    matchEvent: {
-      type: null,
-      details: null,
-    },
+  winner: '',
+  matchEvent: {
+    type: null,
+    details: null,
+  },
 };
 
 const matchReducer = (state, action) => {
@@ -101,13 +104,17 @@ const matchReducer = (state, action) => {
     case 'START_MATCH':
       return {
         ...state,
+        matchStarted: true,
+      };
+    case 'SET_CURRENT_SERVER':
+      return {
+        ...state,
         currentServer: action.server,
         ballPossession: action.server,
-        matchStarted: true,
       };
     case 'UPDATE_BALL_POSSESSION':
       const matchEvent = action.rallyDiscarded ? { type: 'referee-call', details: { text: 'Se repite el punto' } } : state.matchEvent;
-      return { ...state, ballPossession: action.newPossession , matchEvent};
+      return { ...state, ballPossession: action.newPossession, matchEvent };
     case 'RALLY_END': {
       const { winner, statsUpdate, faultingTeam, teams } = action;
       const newScores = {
@@ -132,7 +139,7 @@ const matchReducer = (state, action) => {
           ...state.timeouts,
           [action.team]: state.timeouts[action.team] + 1,
         },
-        matchEvent: {type: 'timeout', details: { text: 'Tiempo muerto', team: teams[action.team] }}
+        matchEvent: { type: 'timeout', details: { text: 'Tiempo muerto', team: teams[action.team] } }
       };
     case 'ADJUST_SCORE':
       return {
@@ -180,6 +187,8 @@ const matchReducer = (state, action) => {
           matchStarted: false, // disable action buttons
           timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts at the start of a new set
           winner,
+          currentServer: null,
+          ballPossession: null,
         };
         setParentMatchDataCallback(newState); // Sync with parent state
         return newState;
@@ -210,6 +219,8 @@ const matchReducer = (state, action) => {
 function Match({ matchDetails, matchData, setMatchData, socket }) {
   const { teams, teamLogos, matchHeader, stadium, extendedInfo, maxSets } = matchDetails;
   const [localMatchData, dispatch] = useReducer(matchReducer, matchData || initialState);
+  const [rallyStage, setRallyStage] = useState('start'); // Track rally stage
+
 
   const setParentMatchDataCallback = useCallback((data) => {
     // Emit the updated match details to the server via the socket
@@ -232,8 +243,12 @@ function Match({ matchDetails, matchData, setMatchData, socket }) {
     });
   }, [localMatchData.scores, localMatchData.setsWon, maxSets, teams, setParentMatchDataCallback, localMatchData.currentServer, localMatchData.timeouts, localMatchData.winner, localMatchData.matchEvent]);
 
-  const handleStartMatch = (server) => {
-    dispatch({ type: 'START_MATCH', server });
+  const handleStartMatch = () => {
+    dispatch({ type: 'START_MATCH' });
+  };
+
+  const handleSetCurrentServer = (server) => {
+    dispatch({ type: 'SET_CURRENT_SERVER', server });
   };
 
   const updateBallPossession = (newPossession, rallyDiscarded = null) => {
@@ -252,11 +267,20 @@ function Match({ matchDetails, matchData, setMatchData, socket }) {
     dispatch({ type: 'ADJUST_SCORE', team, adjustment });
   };
 
+  const handleRallyStageChange = (stage) => {
+    setRallyStage(stage);
+  };
+
   return (
     <MatchContainer>
-      <h1>{matchHeader}</h1>
-      <p>Stadium: {stadium}</p>
-      <p>Info: {extendedInfo}</p>
+      <div>
+        <TeamButton onClick={() => handleStartMatch()} disabled={localMatchData.matchStarted} >Start match</TeamButton>
+      </div>
+      <div>
+        <TeamButton onClick={() => handleSetCurrentServer('teamA')} disabled={!localMatchData.matchStarted || rallyStage !== 'start'}>Team A Serves</TeamButton>
+        <TeamButton onClick={() => handleSetCurrentServer('teamB')} disabled={!localMatchData.matchStarted || rallyStage !== 'start'} >Team B Serves</TeamButton>
+      </div>
+
       <ScoreBoard
         teams={teams}
         teamLogos={teamLogos}
@@ -264,24 +288,24 @@ function Match({ matchDetails, matchData, setMatchData, socket }) {
         setsWon={localMatchData.setsWon}
         currentServer={localMatchData.currentServer}
         ballPossession={localMatchData.ballPossession}
-        onStartMatch={handleStartMatch}
         matchStarted={localMatchData.matchStarted}
         onAdjustScore={handleAdjustScore}
       />
       <TimeoutContainer>
         <TimeoutButton
           onClick={() => handleTimeout('teamA')}
-          disabled={localMatchData.timeouts.teamA >= 2}
+          disabled={!localMatchData.matchStarted || localMatchData.timeouts.teamA >= 2 || rallyStage !== 'start'}
         >
           Team A Timeout ({localMatchData.timeouts.teamA}/2)
         </TimeoutButton>
         <TimeoutButton
           onClick={() => handleTimeout('teamB')}
-          disabled={localMatchData.timeouts.teamB >= 2}
+          disabled={!localMatchData.matchStarted || localMatchData.timeouts.teamB >= 2 || rallyStage !== 'start'}
         >
           Team B Timeout ({localMatchData.timeouts.teamB}/2)
         </TimeoutButton>
       </TimeoutContainer>
+
       <RallyControl
         teams={teams}
         currentServer={localMatchData.currentServer}
@@ -289,6 +313,8 @@ function Match({ matchDetails, matchData, setMatchData, socket }) {
         onRallyEnd={handleRallyEnd}
         updateBallPossession={updateBallPossession}
         matchStarted={localMatchData.matchStarted}
+        onSetCurrentServer={handleSetCurrentServer}
+        onRallyStageChange={handleRallyStageChange}
       />
       <Statistics teams={teams} statistics={localMatchData.statistics} />
       <div>
