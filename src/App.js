@@ -54,7 +54,7 @@ const OpenLinkButton = styled.button`
 `;
 
 const SOCKET_SERVER_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:3005';
-const OVERLAY_URL = process.env.OVERLAY_URL || 'http://localhost:3001';
+const OVERLAY_URL = process.env.REACT_APP_OVERLAY_URL || 'http://localhost:3001';
 
 function App() {
   const [matchDetails, setMatchDetails] = useState({
