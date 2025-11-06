@@ -217,7 +217,7 @@ const matchReducer = (state, action) => {
 // --- Main Match Component ---
 
 function Match({ matchDetails, matchData, setMatchData, socket }) {
-  const { teams, teamLogos, matchHeader, stadium, extendedInfo, maxSets } = matchDetails;
+  const { teams, teamLogos, maxSets } = matchDetails;
   const [localMatchData, dispatch] = useReducer(matchReducer, matchData || initialState);
   const [rallyStage, setRallyStage] = useState('start'); // Track rally stage
 

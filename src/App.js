@@ -114,7 +114,7 @@ function App() {
 
   const [activeTab, setActiveTab] = useState('prematch');
   const [socket, setSocket] = useState(null);
-  const [key, setKey] = useState(() => {
+  const [key] = useState(() => {
     // Load the key from a cookie or generate a new UUID
     const existingKey = Cookies.get('websocket-key');
     if (existingKey) {
