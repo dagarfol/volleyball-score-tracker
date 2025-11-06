@@ -53,6 +53,9 @@ const OpenLinkButton = styled.button`
   }
 `;
 
+const SOCKET_SERVER_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:3005';
+const OVERLAY_URL = process.env.OVERLAY_URL || 'http://localhost:3001';
+
 function App() {
   const [matchDetails, setMatchDetails] = useState({
     teams: { teamA: 'CV Alcala Glauka Viajes', teamB: 'CV el otro con patrocinador' },
@@ -128,7 +131,7 @@ function App() {
 
   useEffect(() => {
     // Connect to the Socket.io server using the key
-    const socketInstance = io('http://localhost:3005', {
+    const socketInstance = io(SOCKET_SERVER_URL, {
       query: { key },
     });
 
@@ -159,7 +162,7 @@ function App() {
   }, [key]);
 
   const openOtherApp = () => {
-    const otherAppUrl = `http://localhost:3001?key=${key}`;
+    const otherAppUrl = OVERLAY_URL + `?key=${key}`;
     window.open(otherAppUrl, '_blank');
   };
 
