@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import PreMatch from './components/PreMatch';
 import Match from './components/Match';
 import Controls from './components/Controls';
+import ResizablePreview from './components/ResizablePreview';
 import Cookies from 'js-cookie';
 import io from 'socket.io-client';
 import ShortUUID from 'short-uuid';
@@ -148,14 +149,14 @@ function App() {
       return existingKey;
     } else {
       const translator = ShortUUID();
-      const newKey = translator.new(); 
+      const newKey = translator.new();
       Cookies.set('websocket-key', newKey, { expires: 365 }); // Store the key in a cookie for 1 year
       return newKey;
     }
   });
-  
+
   const overlayUrl = `${OVERLAY_URL}?key=${key}`;
-  
+
   useEffect(() => {
     // Connect to the Socket.io server using the key
     const socketInstance = io(SOCKET_SERVER_URL, {
@@ -195,10 +196,7 @@ function App() {
   return (
     <AppContainer>
       <h2>Preview</h2>
-      <div style={{ width: '400px', height: '300px', overflow: 'hidden', border: '1px solid #ccc', marginTop: '-10px', marginBottom: '15px', }} >
-          <iframe src={overlayUrl} title="Overlay Preview" style={{ width: '1200px', height: '900px', border: '0', transform: 'scale(0.333)', transformOrigin: '0 0', }} />
-      </div>
-
+      <ResizablePreview src={overlayUrl} />
       <TabContainer>
         <TabButton active={activeTab === 'prematch'} onClick={() => setActiveTab('prematch')}>
           Pre-Match Setup
@@ -209,14 +207,14 @@ function App() {
         <TabButton active={activeTab === 'controls'} onClick={() => setActiveTab('controls')}>
           Controls
         </TabButton>
-      <OpenLinkButton onClick={openOtherApp}>
-        Open Other App
-      </OpenLinkButton>
+        <OpenLinkButton onClick={openOtherApp}>
+          Open Other App
+        </OpenLinkButton>
       </TabContainer>
 
       {activeTab === 'prematch' && <PreMatch setMatchDetails={setMatchDetails} matchDetails={matchDetails} socket={socket} />}
       {activeTab === 'match' && <Match matchDetails={matchDetails} matchData={matchData} setMatchData={setMatchData} socket={socket} />}
-      {activeTab === 'controls' && <Controls socket={socket} config={config} setConfig={setConfig}/>}
+      {activeTab === 'controls' && <Controls socket={socket} config={config} setConfig={setConfig} />}
     </AppContainer>
   );
 }
