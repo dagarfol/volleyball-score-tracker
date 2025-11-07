@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import CustomCombobox from './CustomCombobox';
 
 const PreMatchContainer = styled.div`
   display: flex;
@@ -171,30 +172,14 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
         value={teamA}
         onChange={(e) => setTeamA(e.target.value)}
       />
-      <ImageSelector>
-        <Input
-          type="text"
-          placeholder="Team A Logo URL"
-          value={teamALogo}
-          onChange={(e) => setTeamALogo(e.target.value)}
-        />
-        <ImagePreview src={teamALogo}></ImagePreview>
-      </ImageSelector>
+      <CustomCombobox placeholderText={"Team A Logo URL"} inputValue={teamALogo} onInputChange={setTeamALogo} />
       <Input
         type="text"
         placeholder="Team B Name"
         value={teamB}
         onChange={(e) => setTeamB(e.target.value)}
       />
-      <ImageSelector>
-        <Input
-          type="text"
-          placeholder="Team B Logo URL"
-          value={teamBLogo}
-          onChange={(e) => setTeamBLogo(e.target.value)}
-        />
-        <ImagePreview src={teamBLogo}></ImagePreview>
-      </ImageSelector>
+      <CustomCombobox placeholderText={"Team B Logo URL"} inputValue={teamBLogo} onInputChange={setTeamBLogo} />
       <h2>{teamA} Statistics (Team A)</h2>
       {renderStatInputs('A', statsA)}
 
