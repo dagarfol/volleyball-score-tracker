@@ -153,7 +153,9 @@ function App() {
       return newKey;
     }
   });
-
+  
+  const overlayUrl = `${OVERLAY_URL}?key=${key}`;
+  
   useEffect(() => {
     // Connect to the Socket.io server using the key
     const socketInstance = io(SOCKET_SERVER_URL, {
@@ -187,12 +189,16 @@ function App() {
   }, [key]);
 
   const openOtherApp = () => {
-    const otherAppUrl = OVERLAY_URL + `?key=${key}`;
-    window.open(otherAppUrl, '_blank');
+    window.open(overlayUrl, '_blank');
   };
 
   return (
     <AppContainer>
+      <h2>Preview</h2>
+      <div style={{ width: '400px', height: '300px', overflow: 'hidden', border: '1px solid #ccc', marginTop: '-10px', marginBottom: '15px', }} >
+          <iframe src={overlayUrl} title="Overlay Preview" style={{ width: '1200px', height: '900px', border: '0', transform: 'scale(0.333)', transformOrigin: '0 0', }} />
+      </div>
+
       <TabContainer>
         <TabButton active={activeTab === 'prematch'} onClick={() => setActiveTab('prematch')}>
           Pre-Match Setup
@@ -210,7 +216,7 @@ function App() {
 
       {activeTab === 'prematch' && <PreMatch setMatchDetails={setMatchDetails} matchDetails={matchDetails} socket={socket} />}
       {activeTab === 'match' && <Match matchDetails={matchDetails} matchData={matchData} setMatchData={setMatchData} socket={socket} />}
-      {activeTab === 'controls' && <Controls socket={socket} config={config} setConfig={setConfig} />}
+      {activeTab === 'controls' && <Controls socket={socket} config={config} setConfig={setConfig}/>}
     </AppContainer>
   );
 }
