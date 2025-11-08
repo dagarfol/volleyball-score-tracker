@@ -30,41 +30,41 @@ const TableCell = styled.td`
   border: 1px solid #ddd;
 `;
 
-const calculatePercentage = (value, total) => {
-  if (total === 0) return '0%';
-  return `${((value / total) * 100).toFixed(2)}%`;
-};
+// const calculatePercentage = (value, total) => {
+//   if (total === 0) return '0%';
+//   return `${((value / total) * 100).toFixed(2)}%`;
+// };
 
 const Statistics = ({ teams, statistics }) => {
-  const serviceEffectivenessA = calculatePercentage(
-    statistics.teamA.ace - statistics.teamA.serveError,
-    statistics.teamA.serve
-  );
+  // const serviceEffectivenessA = calculatePercentage(
+  //   statistics.teamA.ace - statistics.teamA.serveError,
+  //   statistics.teamA.serve
+  // );
 
-  const serviceEffectivenessB = calculatePercentage(
-    statistics.teamB.ace - statistics.teamB.serveError,
-    statistics.teamB.serve
-  );
+  // const serviceEffectivenessB = calculatePercentage(
+  //   statistics.teamB.ace - statistics.teamB.serveError,
+  //   statistics.teamB.serve
+  // );
 
-  const attackEffectivenessA = calculatePercentage(
-    statistics.teamA.attackPoint - statistics.teamA.attackError,
-    statistics.teamA.attack
-  );
+  // const attackEffectivenessA = calculatePercentage(
+  //   statistics.teamA.attackPoint - statistics.teamA.attackError,
+  //   statistics.teamA.attack
+  // );
 
-  const attackEffectivenessB = calculatePercentage(
-    statistics.teamB.attackPoint - statistics.teamB.attackError,
-    statistics.teamB.attack
-  );
+  // const attackEffectivenessB = calculatePercentage(
+  //   statistics.teamB.attackPoint - statistics.teamB.attackError,
+  //   statistics.teamB.attack
+  // );
 
-  const defenseEffectivenessA = calculatePercentage(
-    statistics.teamA.dig - statistics.teamA.digError,
-    statistics.teamB.attack
-  );
+  // const defenseEffectivenessA = calculatePercentage(
+  //   statistics.teamA.dig - statistics.teamA.digError,
+  //   statistics.teamB.attack
+  // );
 
-  const defenseEffectivenessB = calculatePercentage(
-    statistics.teamB.dig + statistics.teamB.reception - statistics.teamB.digError - statistics.teamB.receptionError,
-    statistics.teamA.attack
-  );
+  // const defenseEffectivenessB = calculatePercentage(
+  //   statistics.teamB.dig + statistics.teamB.reception - statistics.teamB.digError - statistics.teamB.receptionError,
+  //   statistics.teamA.attack
+  // );
 
   return (
     <StatisticsContainer>
