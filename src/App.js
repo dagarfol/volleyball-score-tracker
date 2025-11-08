@@ -79,68 +79,70 @@ const initialConfig = {
   },
 };
 
-function App() {
-  const [matchDetails, setMatchDetails] = useState({
-    teams: { teamA: 'CV Alcala Glauka Viajes', teamB: 'CV el otro con patrocinador' },
+const initialMatchDetails = {
+    teams: { teamA: 'CV Alcala Glauka Viajes', teamB: 'CVLEGANES.COM B' },
     teamLogos: {
       teamA: 'https://www.todovoleibol.com/images/escudos/cv-alcala.jpg',
-      teamB: 'https://www.todovoleibol.com/images/escudos/cv-fuenlabrada.jpg'
+      teamB: 'https://www.todovoleibol.com/images/escudos/cv-leganes.jpg'
     },
     matchHeader: 'CADETE - 1ª División Aut. Preferente',
     extendedInfo: 'Liga regular - Jornada 5',
-    stadium: 'Pabellón Demetrio Lozano, Alcalá de Henares',
+    stadium: 'Pabellón EMILIA PARDO BAZAN, Leganés',
     competitionLogo: 'https://fmvoley.com/images/logo.svg',
     maxSets: 5,
     stats: {
       teamA: {
-        ranking: 2,
-        matchesPlayed: 15,
-        totalMatchesWon: 12,
-        won3Points: 8,
-        won2Points: 4,
-        totalMatchesLost: 3,
-        lost1Point: 2,
-        lost0Points: 1,
-        totalPointsScored: 345,
-        totalPointsReceived: 298,
+        ranking: 9,
+        matchesPlayed: 5,
+        totalMatchesWon: 1,
+        won3Points: 1,
+        won2Points: 0,
+        totalMatchesLost: 4,
+        lost1Point: 1,
+        lost0Points: 3,
+        totalPointsScored: 377,
+        totalPointsReceived: 408,
       },
       teamB: {
-        ranking: 5,
-        matchesPlayed: 15,
-        totalMatchesWon: 10,
-        won3Points: 7,
-        won2Points: 3,
+        ranking: 12,
+        matchesPlayed: 5,
+        totalMatchesWon: 0,
+        won3Points: 0,
+        won2Points: 0,
         totalMatchesLost: 5,
-        lost1Point: 3,
-        lost0Points: 2,
-        totalPointsScored: 320,
-        totalPointsReceived: 310,
+        lost1Point: 0,
+        lost0Points: 5,
+        totalPointsScored: 275,
+        totalPointsReceived: 397,
       }
     },
-  });
+  };
 
-  const [matchData, setMatchData] = useState({
+  const initialMatchData = {
     scores: { teamA: 0, teamB: 0 },
     setsWon: { teamA: 0, teamB: 0 },
-    setScores: [],//{ teamA: 0, teamB: 0 },],
+    setScores: [],//{ teamA: 25, teamB: 0 },{ teamA: 25, teamB: 0 },],
     currentServer: '',
     ballPossession: '',
     matchStarted: false,
     timeouts: { teamA: 0, teamB: 0 },
     statistics: {
-      teamA: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0 },
-      teamB: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0 },
+      teamA: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0, serviceEffectiveness: 0,attackEffectiveness: 0, defenseEffectiveness: 0 },
+      teamB: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0, serviceEffectiveness: 0,attackEffectiveness: 0, defenseEffectiveness: 0 },
     },
-    winner: '',
+    winner: null,
     matchEvent: {
       type: null,
       details: null,
     },
-  });
+  };
 
+function App() {
+  const [matchDetails, setMatchDetails] = useState(initialMatchDetails);
+  const [matchData, setMatchData] = useState(initialMatchData);
+  const [config, setConfig] = useState(initialConfig);
   const [activeTab, setActiveTab] = useState('prematch');
   const [socket, setSocket] = useState(null);
-  const [config, setConfig] = useState(initialConfig);
 
   const [key] = useState(() => {
     // Load the key from a cookie or generate a new short UUID
@@ -190,7 +192,11 @@ function App() {
   }, [key]);
 
   const openOtherApp = () => {
-    window.open(overlayUrl, '_blank');
+    // window.open(overlayUrl, '_blank');
+    navigator.clipboard.writeText(overlayUrl);
+
+  // Alert the copied text
+  alert("Output URL copied to clipboard");
   };
 
   return (
@@ -208,7 +214,7 @@ function App() {
           Controls
         </TabButton>
         <OpenLinkButton onClick={openOtherApp}>
-          Open Other App
+          Copy output URL
         </OpenLinkButton>
       </TabContainer>
 

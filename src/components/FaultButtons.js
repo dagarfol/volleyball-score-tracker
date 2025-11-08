@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const FaultButtonContainer = styled.div`
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   flex-wrap: wrap;
   margin-top: 10px;
 `;
@@ -37,7 +37,7 @@ function FaultButtons({ teams, currentServer, handleAction }) {
           onClick={() => handleAction('fault', team)}
           disabled={!currentServer}
         >
-          Fault {teams[team]}
+          Fault {team}
         </FaultButton>
       ))}
     </FaultButtonContainer>

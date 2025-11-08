@@ -6,14 +6,12 @@ const ScoreBoardContainer = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  margin-bottom: 20px;
 `;
 
 const ScoresContainer = styled.div`
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin-top: 20px;
 `;
 
 const TeamScoreA = styled.div`
@@ -28,6 +26,11 @@ const TeamScoreA = styled.div`
   position: relative;
   border: ${({ isPossession }) => (isPossession ? '3px solid #32CD32' : 'none')}; /* Green border for possession */
   text-align: center;
+`;
+const TeamInfo = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const TeamScoreB = styled.div`
@@ -99,10 +102,10 @@ function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPoss
     <ScoreBoardContainer>
       <ScoresContainer>
         <TeamScoreA isPossession={ballPossession === 'teamA'}>
-          <div>
+          <TeamInfo>
             <TeamLogo src={teamLogos.teamA} alt={`${teams.teamA} logo`} />
-            <h2>{teams.teamA}</h2>
-          </div>
+            <span>{teams.teamA}</span>
+          </TeamInfo>
           <ScoreNumberContainer>
             <ScoreAdjustContainer>
               <ScoreAdjustButton disabled={!matchStarted} onClick={() => onAdjustScore('teamA', 1)}>+</ScoreAdjustButton>
@@ -114,10 +117,10 @@ function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPoss
           {currentServer === 'teamA' && <ServingIndicator />}
         </TeamScoreA>
         <TeamScoreB isPossession={ballPossession === 'teamB'}>
-          <div>
+          <TeamInfo>
             <TeamLogo src={teamLogos.teamB} alt={`${teams.teamB} logo`} />
-            <h2>{teams.teamB}</h2>
-          </div>
+            <span>{teams.teamB}</span>
+          </TeamInfo>
           <ScoreNumberContainer>
             <ScoreNumber>{scores.teamB}</ScoreNumber>
             <ScoreAdjustContainer>

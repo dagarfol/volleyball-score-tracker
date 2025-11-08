@@ -10,7 +10,7 @@ const MatchContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 5px;
   max-width: 600px;
   margin: auto;
   background-color: #f9f9f9;
@@ -42,6 +42,10 @@ const TimeoutButton = styled.button`
   &:hover:enabled { background-color: #e68900; }
 `;
 // --- Helper Functions ---
+const calculatePercentage = (value, total) => {
+  if (total === 0) return '0%';
+  return `${((value / total) * 100).toFixed(2)}%`;
+};
 
 const calculateUpdatedStatistics = (currentStats, statsUpdate) => ({
   teamA: {
@@ -59,6 +63,9 @@ const calculateUpdatedStatistics = (currentStats, statsUpdate) => ({
     blockPoint: currentStats.teamA.blockPoint + (statsUpdate.teamA?.blockPoint || 0),
     blockOut: currentStats.teamA.blockOut + (statsUpdate.teamA?.blockOut || 0),
     fault: currentStats.teamA.fault + (statsUpdate.teamA?.fault || 0),
+    serviceEffectiveness: calculatePercentage(currentStats.teamA.ace - currentStats.teamA.serveError, currentStats.teamA.serve),
+    attackEffectiveness: calculatePercentage(currentStats.teamA.attackPoint - currentStats.teamA.attackError, currentStats.teamA.attack),
+    defenseEffectiveness: calculatePercentage(currentStats.teamA.dig - currentStats.teamA.digError, currentStats.teamB.attack),
   },
   teamB: {
     serve: currentStats.teamB.serve + (statsUpdate.teamB?.serve || 0),
@@ -75,6 +82,9 @@ const calculateUpdatedStatistics = (currentStats, statsUpdate) => ({
     blockPoint: currentStats.teamB.blockPoint + (statsUpdate.teamB?.blockPoint || 0),
     blockOut: currentStats.teamB.blockOut + (statsUpdate.teamB?.blockOut || 0),
     fault: currentStats.teamB.fault + (statsUpdate.teamB?.fault || 0),
+    serviceEffectiveness: calculatePercentage(currentStats.teamB.ace - currentStats.teamA.serveError, currentStats.teamA.serve),
+    attackEffectiveness: calculatePercentage(currentStats.teamB.attackPoint - currentStats.teamA.attackError, currentStats.teamA.attack),
+    defenseEffectiveness: calculatePercentage(currentStats.teamB.dig - currentStats.teamA.digError, currentStats.teamB.attack),
   },
 });
 
@@ -161,6 +171,11 @@ const matchReducer = (state, action) => {
       let setEnded = false;
       const newSetScores = [...state.setScores, { teamA: state.scores.teamA, teamB: state.scores.teamB }];
 
+      // let matchWinner = {...};
+      if (state.winner) {
+        return state;
+      }
+
       if (state.scores.teamA >= requiredPoints && scoreDifference >= 2) {
         newSetsWon.teamA += 1;
         setEnded = true;
@@ -241,7 +256,8 @@ function Match({ matchDetails, matchData, setMatchData, socket }) {
       teams,
       setParentMatchDataCallback,
     });
-  }, [localMatchData.scores, localMatchData.setsWon, maxSets, teams, setParentMatchDataCallback, localMatchData.currentServer, localMatchData.timeouts, localMatchData.winner, localMatchData.matchEvent]);
+  }, [maxSets, teams, setParentMatchDataCallback, localMatchData.scores, localMatchData.currentServer, localMatchData.matchEvent]);
+  // }, [localMatchData.scores, localMatchData.setsWon, maxSets, teams, setParentMatchDataCallback, localMatchData.currentServer, localMatchData.timeouts, localMatchData.winner, localMatchData.matchEvent]);
 
   const handleStartMatch = () => {
     dispatch({ type: 'START_MATCH' });

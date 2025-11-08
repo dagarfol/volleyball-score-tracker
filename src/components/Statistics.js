@@ -62,7 +62,7 @@ const Statistics = ({ teams, statistics }) => {
   );
 
   const defenseEffectivenessB = calculatePercentage(
-    statistics.teamB.dig - statistics.teamB.digError,
+    statistics.teamB.dig + statistics.teamB.reception - statistics.teamB.digError - statistics.teamB.receptionError,
     statistics.teamA.attack
   );
 
@@ -149,18 +149,24 @@ const Statistics = ({ teams, statistics }) => {
           </TableRow>
           <TableRow>
             <TableCell>Service Effectiveness</TableCell> {/* New calculated stat */}
-            <TableCell>{serviceEffectivenessA}</TableCell>
-            <TableCell>{serviceEffectivenessB}</TableCell>
+            {/* <TableCell>{serviceEffectivenessA}</TableCell>
+            <TableCell>{serviceEffectivenessB}</TableCell> */}
+            <TableCell>{statistics.teamA.serviceEffectiveness}</TableCell>
+            <TableCell>{statistics.teamB.serviceEffectiveness}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Attack Effectiveness</TableCell> {/* New calculated stat */}
-            <TableCell>{attackEffectivenessA}</TableCell>
-            <TableCell>{attackEffectivenessB}</TableCell>
+            {/* <TableCell>{attackEffectivenessA}</TableCell>
+            <TableCell>{attackEffectivenessB}</TableCell> */}
+            <TableCell>{statistics.teamA.attackEffectiveness}</TableCell>
+            <TableCell>{statistics.teamB.attackEffectiveness}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Defense Effectiveness</TableCell> {/* New calculated stat */}
-            <TableCell>{defenseEffectivenessA}</TableCell>
-            <TableCell>{defenseEffectivenessB}</TableCell>
+            {/* <TableCell>{defenseEffectivenessA}</TableCell>
+            <TableCell>{defenseEffectivenessB}</TableCell> */}
+            <TableCell>{statistics.teamA.defenseEffectiveness}</TableCell>
+            <TableCell>{statistics.teamB.defenseEffectiveness}</TableCell>
           </TableRow>
         </tbody>
       </Table>
