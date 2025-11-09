@@ -59,23 +59,24 @@ const FixedButtonContainer = styled.div`
   width: 33%;
 `;
 
-function ActionButtons({ rallyStage, currentServer, handleAction }) {
+function ActionButtons({ rallyStage, currentServer, currentPossession, handleAction }) {
   const actions = [];
+  const opposingTeam = currentPossession === 'teamA' ? 'teamB' : 'teamA';
 
   if (rallyStage === 'start') {
-    actions.push({ label: 'Serve', action: 'serve' });
+    actions.push({ label: `Serve ${currentPossession}`, action: 'serve' });
   } else if (rallyStage === 'afterServe') {
-    actions.push({ label: 'Reception', action: 'reception' });
+    actions.push({ label: `Reception ${opposingTeam}`, action: 'reception' });
   } else if (rallyStage === 'afterReception') {
-    actions.push({ label: 'Attack', action: 'attack' });
+    actions.push({ label: `Attack ${currentPossession}`, action: 'attack' });
   } else if (rallyStage === 'afterAttack') {
-    actions.push({ label: 'Block', action: 'block' });
-    actions.push({ label: 'Dig', action: 'dig' });
+    actions.push({ label: `Block ${opposingTeam}`, action: 'block' });
+    actions.push({ label: `Dig ${opposingTeam}`, action: 'dig' });
   } else if (rallyStage === 'afterBlock') {
-    actions.push({ label: 'Dig', action: 'dig' });
-    actions.push({ label: 'Continue', action: 'continue' });
+    actions.push({ label: `Dig ${opposingTeam}`, action: 'dig' });
+    actions.push({ label: `Continue ${currentPossession}`, action: 'continue' });
   } else if (rallyStage === 'afterDig') {
-    actions.push({ label: 'Attack', action: 'attack' });
+    actions.push({ label: `Attack ${currentPossession}`, action: 'attack' });
   }
 
   const showErrorButton = ['afterServe', 'afterReception', 'afterAttack', 'afterBlock', 'afterDig'].includes(rallyStage);
@@ -90,7 +91,7 @@ function ActionButtons({ rallyStage, currentServer, handleAction }) {
           disabled={!currentServer}
           visible={showErrorButton}
         >
-          Error
+          Error {currentPossession}
         </ActionButton>
       </FixedButtonContainer>
       <InnerActionButtonContainer>
@@ -112,7 +113,7 @@ function ActionButtons({ rallyStage, currentServer, handleAction }) {
           disabled={!currentServer}
           visible={showPointButton}
         >
-          Point
+          Point {currentPossession}
         </ActionButton>
       </FixedButtonContainer>
     </ActionButtonContainer>

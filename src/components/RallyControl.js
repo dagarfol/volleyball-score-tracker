@@ -164,8 +164,9 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
         dispatch({ type: 'SET_RALLY_STAGE', payload: 'afterBlock' });
         break;
       case 'continue':
+        newStatsUpdate[team].dig += 1;
         dispatch({ type: 'ADD_ACTION', payload: { action, team, rallyStage: state.rallyStage } });
-        dispatch({ type: 'SET_RALLY_STAGE', payload: 'afterReception' });
+        dispatch({ type: 'SET_RALLY_STAGE', payload: 'afterDig' });
         break;
       case 'dig':
         newStatsUpdate[opposingTeam].dig += 1;
@@ -334,6 +335,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
       <ActionButtons
         rallyStage={state.rallyStage}
         currentServer={currentServer}
+        currentPossession={ballPossession}
         handleAction={handleAction}
       />
       {state.showConfirmation && (
