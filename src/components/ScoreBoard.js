@@ -27,6 +27,7 @@ const TeamScoreA = styled.div`
   border: ${({ isPossession }) => (isPossession ? '3px solid #32CD32' : 'none')}; /* Green border for possession */
   text-align: center;
 `;
+
 const TeamInfo = styled.div`
   display: flex;
   align-items: center;
@@ -58,9 +59,15 @@ const ScoreNumber = styled.p`
   margin: 0 10px;
 `;
 
-const SetsWon = styled.p`
-  font-size: 1em;
-  margin: 0;
+const SetsWonContainer = styled.div`
+  margin-top: 10px;
+`;
+
+const SetsWonSelect = styled.select`
+  margin-top: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 `;
 
 const ServingIndicator = styled.div`
@@ -97,7 +104,21 @@ const ScoreAdjustButton = styled.button`
   &:hover:enabled { background-color: #45a049; }
 `;
 
-function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPossession, matchStarted, onAdjustScore }) {
+function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPossession, matchStarted, onAdjustScore, maxSets, onSetsWonChange }) {
+  const handleSetsWonChange = (team, event) => {
+    const newSetsWon = parseInt(event.target.value, 10);
+    onSetsWonChange(team, newSetsWon);
+  };
+
+  const renderSetsWonOptions = () => {
+    const maxValue = maxSets / 2;
+    const options = [];
+    for (let i = 0; i <= maxValue; i++) {
+      options.push(<option key={i} value={i}>{i}</option>);
+    }
+    return options;
+  };
+
   return (
     <ScoreBoardContainer>
       <ScoresContainer>
@@ -113,7 +134,12 @@ function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPoss
             </ScoreAdjustContainer>
             <ScoreNumber>{scores.teamA}</ScoreNumber>
           </ScoreNumberContainer>
-          <SetsWon>Sets Won: {setsWon.teamA}</SetsWon>
+          <SetsWonContainer>
+            Sets Won: 
+            <SetsWonSelect value={setsWon.teamA} onChange={(event) => handleSetsWonChange('teamA', event)}>
+              {renderSetsWonOptions()}
+            </SetsWonSelect>
+          </SetsWonContainer>
           {currentServer === 'teamA' && <ServingIndicator />}
         </TeamScoreA>
         <TeamScoreB isPossession={ballPossession === 'teamB'}>
@@ -128,7 +154,12 @@ function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPoss
               <ScoreAdjustButton disabled={!matchStarted} onClick={() => onAdjustScore('teamB', -1)}>-</ScoreAdjustButton>
             </ScoreAdjustContainer>
           </ScoreNumberContainer>
-          <SetsWon>Sets Won: {setsWon.teamB}</SetsWon>
+          <SetsWonContainer>
+            Sets Won: 
+            <SetsWonSelect value={setsWon.teamB} onChange={(event) => handleSetsWonChange('teamB', event)}>
+              {renderSetsWonOptions()}
+            </SetsWonSelect>
+          </SetsWonContainer>
           {currentServer === 'teamB' && <ServingIndicator />}
         </TeamScoreB>
       </ScoresContainer>

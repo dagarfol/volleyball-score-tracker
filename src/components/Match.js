@@ -159,6 +159,14 @@ const matchReducer = (state, action) => {
           [action.team]: Math.max(0, state.scores[action.team] + action.adjustment),
         },
       };
+    case 'UPDATE_SETS_WON':
+      return {
+        ...state,
+        setsWon: {
+          ...state.setsWon,
+          [action.team]: action.newSetsWon,
+        },
+      };
     case 'PROCESS_GAME_END': {
       const { maxSets, teams, setParentMatchDataCallback } = action;
       const scoreDifference = Math.abs(state.scores.teamA - state.scores.teamB);
@@ -192,8 +200,8 @@ const matchReducer = (state, action) => {
       }
 
       if (matchEnded) {
-        const winner = newSetsWon.teamA > newSetsWon.teamB ? teams.teamA : teams.teamB
-        alert(`${winner} ha ganado el partido!`);
+        const winner = newSetsWon.teamA > newSetsWon.teamB ? "teamA" : "teamB";
+        alert(`${teams[winner]} ha ganado el partido!`);
         const newState = {
           ...state,
           // scores: newScores,
@@ -287,6 +295,14 @@ function Match({ matchDetails, matchData, setMatchData, socket }) {
     setRallyStage(stage);
   };
 
+  const handleSetsWonChange = (team, newSetsWon) => {
+    dispatch({
+      type: 'UPDATE_SETS_WON',
+      team,
+      newSetsWon,
+    });
+  };
+
   return (
     <MatchContainer>
       <div>
@@ -306,6 +322,8 @@ function Match({ matchDetails, matchData, setMatchData, socket }) {
         ballPossession={localMatchData.ballPossession}
         matchStarted={localMatchData.matchStarted}
         onAdjustScore={handleAdjustScore}
+        maxSets={maxSets}
+        onSetsWonChange={handleSetsWonChange}
       />
       <TimeoutContainer>
         <TimeoutButton
