@@ -93,6 +93,7 @@ const initialMatchDetails = {
     stats: {
       teamA: {
         ranking: 9,
+        competitionPoints: 4,
         matchesPlayed: 5,
         totalMatchesWon: 1,
         won3Points: 1,
@@ -105,6 +106,7 @@ const initialMatchDetails = {
       },
       teamB: {
         ranking: 12,
+        competitionPoints: 0,
         matchesPlayed: 5,
         totalMatchesWon: 0,
         won3Points: 0,

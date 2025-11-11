@@ -100,6 +100,7 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
 
   const statFields = [
     { label: 'Ranking', key: 'ranking' },
+    { label: 'Points', key: 'competitionPoints' },
     { label: 'Matches Played', key: 'matchesPlayed' },
     { label: 'Total Matches Won', key: 'totalMatchesWon' },
     { label: 'Won 3 Points', key: 'won3Points' },
