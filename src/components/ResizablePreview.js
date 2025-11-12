@@ -20,11 +20,11 @@ const IframeWrapper = styled.div`
   background-color: white;
 `;
 
-const NATIVE_WIDTH = 1200;
-const NATIVE_HEIGHT = 900;
+const NATIVE_WIDTH = 1280;
+const NATIVE_HEIGHT = 720;
 
 const ResizablePreview = ({ src }) => {
-  const [size, setSize] = useState({ width: 400, height: 300 });
+  const [size, setSize] = useState({ width: 426, height: 240 });
   const scale = size.width / NATIVE_WIDTH;
 
   const onResize = (event, { size }) => {
@@ -36,8 +36,8 @@ const ResizablePreview = ({ src }) => {
       <ResizableBox
         width={size.width}
         height={size.height}
-        minConstraints={[100, 100]}
-        maxConstraints={[1200, 1000]}
+        minConstraints={[128, 72]}
+        maxConstraints={[1280, 720]}
         lockAspectRatio={true}
         resizeHandles={['se']}
         onResizeStop={onResize}
