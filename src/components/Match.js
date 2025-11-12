@@ -47,46 +47,46 @@ const calculatePercentage = (value, total) => {
   return `${((value / total) * 100).toFixed(2)}%`;
 };
 
-const calculateUpdatedStatistics = (currentStats, statsUpdate) => ({
-  teamA: {
-    serve: currentStats.teamA.serve + (statsUpdate.teamA?.serve || 0),
-    ace: currentStats.teamA.ace + (statsUpdate.teamA?.ace || 0),
-    serveError: currentStats.teamA.serveError + (statsUpdate.teamA?.serveError || 0),
-    reception: currentStats.teamA.reception + (statsUpdate.teamA?.reception || 0),
-    receptionError: currentStats.teamA.receptionError + (statsUpdate.teamA?.receptionError || 0),
-    dig: currentStats.teamA.dig + (statsUpdate.teamA?.dig || 0),
-    digError: currentStats.teamA.digError + (statsUpdate.teamA?.digError || 0),
-    attack: currentStats.teamA.attack + (statsUpdate.teamA?.attack || 0),
-    attackPoint: currentStats.teamA.attackPoint + (statsUpdate.teamA?.attackPoint || 0),
-    attackError: currentStats.teamA.attackError + (statsUpdate.teamA?.attackError || 0),
-    block: currentStats.teamA.block + (statsUpdate.teamA?.block || 0),
-    blockPoint: currentStats.teamA.blockPoint + (statsUpdate.teamA?.blockPoint || 0),
-    blockOut: currentStats.teamA.blockOut + (statsUpdate.teamA?.blockOut || 0),
-    fault: currentStats.teamA.fault + (statsUpdate.teamA?.fault || 0),
-    serviceEffectiveness: calculatePercentage(currentStats.teamA.ace - currentStats.teamA.serveError, currentStats.teamA.serve),
-    attackEffectiveness: calculatePercentage(currentStats.teamA.attackPoint - currentStats.teamA.attackError, currentStats.teamA.attack),
-    defenseEffectiveness: calculatePercentage(currentStats.teamA.dig - currentStats.teamA.digError, currentStats.teamB.attack),
-  },
-  teamB: {
-    serve: currentStats.teamB.serve + (statsUpdate.teamB?.serve || 0),
-    ace: currentStats.teamB.ace + (statsUpdate.teamB?.ace || 0),
-    serveError: currentStats.teamB.serveError + (statsUpdate.teamB?.serveError || 0),
-    reception: currentStats.teamB.reception + (statsUpdate.teamB?.reception || 0),
-    receptionError: currentStats.teamB.receptionError + (statsUpdate.teamB?.receptionError || 0),
-    dig: currentStats.teamB.dig + (statsUpdate.teamB?.dig || 0),
-    digError: currentStats.teamB.digError + (statsUpdate.teamB?.digError || 0),
-    attack: currentStats.teamB.attack + (statsUpdate.teamB?.attack || 0),
-    attackPoint: currentStats.teamB.attackPoint + (statsUpdate.teamB?.attackPoint || 0),
-    attackError: currentStats.teamB.attackError + (statsUpdate.teamB?.attackError || 0),
-    block: currentStats.teamB.block + (statsUpdate.teamB?.block || 0),
-    blockPoint: currentStats.teamB.blockPoint + (statsUpdate.teamB?.blockPoint || 0),
-    blockOut: currentStats.teamB.blockOut + (statsUpdate.teamB?.blockOut || 0),
-    fault: currentStats.teamB.fault + (statsUpdate.teamB?.fault || 0),
-    serviceEffectiveness: calculatePercentage(currentStats.teamB.ace - currentStats.teamA.serveError, currentStats.teamA.serve),
-    attackEffectiveness: calculatePercentage(currentStats.teamB.attackPoint - currentStats.teamA.attackError, currentStats.teamA.attack),
-    defenseEffectiveness: calculatePercentage(currentStats.teamB.dig - currentStats.teamA.digError, currentStats.teamB.attack),
-  },
+const calculateComputedStats = (updatedStats, team) => {
+  const opposingTeam = team === 'teamA' ? 'teamB' : 'teamA';
+  return ({
+    ...updatedStats,
+    [team]: {
+      ...updatedStats[team],
+      serviceEffectiveness: calculatePercentage(updatedStats[team].ace - updatedStats[team].serveError, updatedStats[team].serve),
+      attackEffectiveness: calculatePercentage(updatedStats[team].attackPoint - updatedStats[team].attackError, updatedStats[team].attack),
+      defenseEffectiveness: calculatePercentage(updatedStats[team].dig - updatedStats[team].digError, updatedStats[opposingTeam].attack),
+    }
+  })
+}
+
+const updateStatsByTeam = (team, currentStats, statsUpdate) => ({
+  serve: currentStats[team].serve + (statsUpdate[team]?.serve || 0),
+  ace: currentStats[team].ace + (statsUpdate[team]?.ace || 0),
+  serveError: currentStats[team].serveError + (statsUpdate[team]?.serveError || 0),
+  reception: currentStats[team].reception + (statsUpdate[team]?.reception || 0),
+  receptionError: currentStats[team].receptionError + (statsUpdate[team]?.receptionError || 0),
+  dig: currentStats[team].dig + (statsUpdate[team]?.dig || 0),
+  digError: currentStats[team].digError + (statsUpdate[team]?.digError || 0),
+  attack: currentStats[team].attack + (statsUpdate[team]?.attack || 0),
+  attackPoint: currentStats[team].attackPoint + (statsUpdate[team]?.attackPoint || 0),
+  attackError: currentStats[team].attackError + (statsUpdate[team]?.attackError || 0),
+  block: currentStats[team].block + (statsUpdate[team]?.block || 0),
+  blockPoint: currentStats[team].blockPoint + (statsUpdate[team]?.blockPoint || 0),
+  blockOut: currentStats[team].blockOut + (statsUpdate[team]?.blockOut || 0),
+  fault: currentStats[team].fault + (statsUpdate[team]?.fault || 0),
 });
+
+const calculateUpdatedStatistics = (currentStats, statsUpdate) => {
+  let updatedStats =
+  {
+    teamA: updateStatsByTeam('teamA', currentStats, statsUpdate),
+    teamB: updateStatsByTeam('teamB', currentStats, statsUpdate),
+  }
+  updatedStats = calculateComputedStats(updatedStats, 'teamA');
+  updatedStats = calculateComputedStats(updatedStats, 'teamB');
+  return updatedStats;
+};
 
 // --- Reducer and Initial State ---
 

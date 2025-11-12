@@ -136,7 +136,7 @@ function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPoss
           </ScoreNumberContainer>
           <SetsWonContainer>
             Sets Won: 
-            <SetsWonSelect value={setsWon.teamA} onChange={(event) => handleSetsWonChange('teamA', event)}>
+            <SetsWonSelect disabled={!matchStarted} value={setsWon.teamA} onChange={(event) => handleSetsWonChange('teamA', event)}>
               {renderSetsWonOptions()}
             </SetsWonSelect>
           </SetsWonContainer>
@@ -156,7 +156,7 @@ function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPoss
           </ScoreNumberContainer>
           <SetsWonContainer>
             Sets Won: 
-            <SetsWonSelect value={setsWon.teamB} onChange={(event) => handleSetsWonChange('teamB', event)}>
+            <SetsWonSelect disabled={!matchStarted} value={setsWon.teamB} onChange={(event) => handleSetsWonChange('teamB', event)}>
               {renderSetsWonOptions()}
             </SetsWonSelect>
           </SetsWonContainer>
