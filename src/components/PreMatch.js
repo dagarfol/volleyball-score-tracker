@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import CustomCombobox from './CustomCombobox';
+import MatchSelector from './MatchSelector';
 
 const PreMatchContainer = styled.div`
   display: flex;
@@ -98,6 +99,18 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
     }
   };
 
+    const handleSelectMatch = (selectedMatch) => {
+    setTeamA(selectedMatch.teamA);
+    setTeamB(selectedMatch.teamB);
+    setTeamALogo(selectedMatch.teamALogo);
+    setTeamBLogo(selectedMatch.teamBLogo);
+    setMatchHeader(selectedMatch.matchHeader);
+    setStadium(selectedMatch.stadium);
+    setExtendedInfo(selectedMatch.extendedInfo);
+    setMaxSets(selectedMatch.maxSets);
+    setStatsA(selectedMatch.stats.teamA);
+    setStatsB(selectedMatch.stats.teamB);
+  };  
   const statFields = [
     { label: 'Ranking', key: 'ranking' },
     { label: 'Points', key: 'competitionPoints' },
@@ -130,6 +143,8 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
   return (
     <PreMatchContainer>
       <h1>Pre-Match Setup</h1>
+            <MatchSelector onSelectMatch={handleSelectMatch} />
+
       <Input
         type="text"
         placeholder="Match Header"
