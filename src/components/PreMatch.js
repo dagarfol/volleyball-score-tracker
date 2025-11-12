@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import CustomCombobox from './CustomCombobox';
 import MatchSelector from './MatchSelector';
+import ModalOverlay from './ModalOverlay';
 
 const PreMatchContainer = styled.div`
   display: flex;
@@ -10,6 +11,19 @@ const PreMatchContainer = styled.div`
   padding: 20px;
   max-width: 600px;
   margin: auto;
+`;
+
+const SyncButton = styled.button`
+  margin: 10px;
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  &:hover {
+    background-color: #0056b3;
+  }
 `;
 
 const ImageSelector = styled.div`
@@ -60,7 +74,8 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
   const [statsA, setStatsA] = useState(matchDetails.stats.teamA);
   const [statsB, setStatsB] = useState(matchDetails.stats.teamB);
 
-  // Update match details state whenever any input loses focus or selection changes
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   useEffect(() => {
     const updatedMatchDetails = {
       teams: { teamA, teamB },
@@ -78,7 +93,6 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
 
     setMatchDetails(updatedMatchDetails);
 
-    // Emit the updated match details to the server via the socket
     if (socket) {
       socket.emit('matchDetails', updatedMatchDetails);
     }
@@ -99,7 +113,7 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
     }
   };
 
-    const handleSelectMatch = (selectedMatch) => {
+  const handleSelectMatch = (selectedMatch) => {
     setTeamA(selectedMatch.teamA);
     setTeamB(selectedMatch.teamB);
     setTeamALogo(selectedMatch.teamALogo);
@@ -110,7 +124,9 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
     setMaxSets(selectedMatch.maxSets);
     setStatsA(selectedMatch.stats.teamA);
     setStatsB(selectedMatch.stats.teamB);
-  };  
+    setIsModalOpen(false); // Close the modal after selection
+  };
+
   const statFields = [
     { label: 'Ranking', key: 'ranking' },
     { label: 'Points', key: 'competitionPoints' },
@@ -143,8 +159,12 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
   return (
     <PreMatchContainer>
       <h1>Pre-Match Setup</h1>
-            <MatchSelector onSelectMatch={handleSelectMatch} />
-
+      <SyncButton onClick={() => setIsModalOpen(true)}>Sync from FMV</SyncButton>
+      {isModalOpen && (
+        <ModalOverlay onClose={() => setIsModalOpen(false)}>
+          <MatchSelector onSelectMatch={handleSelectMatch} />
+        </ModalOverlay>
+      )}
       <Input
         type="text"
         placeholder="Match Header"
@@ -201,8 +221,6 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
 
       <h2>{teamB} Statistics (Team B)</h2>
       {renderStatInputs('B', statsB)}
-
-
     </PreMatchContainer>
   );
 }

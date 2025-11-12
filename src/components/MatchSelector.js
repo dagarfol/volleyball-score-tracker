@@ -149,8 +149,8 @@ const MatchSelector = ({ onSelectMatch }) => {
     });
 
     const handleMatchSelect = (selectedMatch) => {
-        const teamAData = rankingData.find(team => team.club_Id === selectedMatch.clubLocalId);
-        const teamBData = rankingData.find(team => team.club_Id === selectedMatch.clubVisitanteId);
+        const teamAData = rankingData.find(team => team.nombre.trim() === selectedMatch.equipo_local.trim());
+        const teamBData = rankingData.find(team => team.nombre.trim() === selectedMatch.equipo_visitante.trim());
         const competition = competitions.find(type => type.id === selectedCompetition);
         const category = categories.find(type => type.id === selectedCategory);
         const phase = phases.find(comp => comp.id === selectedPhase);
