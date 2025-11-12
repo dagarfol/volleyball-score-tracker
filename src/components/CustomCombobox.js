@@ -101,9 +101,13 @@ const CustomCombobox = ({ placeholderText, inputValue, onInputChange }) => {
 
     const suggestions = useMemo(() => {
         if (inputValue.length > 0) {
-            return staticImages.filter(image =>
+            let options = staticImages.filter(image =>
                 image.name.toLowerCase().includes(inputValue.toLowerCase()) || image.path.toLowerCase().includes(inputValue.toLowerCase())
             );
+            if (options.length > 0) {
+                return options;
+            }
+            return staticImages;
         }
         return staticImages;
     }, [inputValue]);
@@ -115,9 +119,7 @@ const CustomCombobox = ({ placeholderText, inputValue, onInputChange }) => {
 
     const handleChange = (e) => {
         onInputChange(e.target.value);
-        if (e.target.value.length > 0) {
-            setIsSuggestionsOpen(true);
-        }
+        setIsSuggestionsOpen(true);
     };
 
     useEffect(() => {
@@ -158,11 +160,11 @@ const CustomCombobox = ({ placeholderText, inputValue, onInputChange }) => {
                     </SuggestionsList>
                 )}
             </InputWrapper>
-            
+
             {inputValue ? (
                 <PreviewImage src={inputValue} alt="Preview" />
             ) : (
-                <PlaceholderSquare /> 
+                <PlaceholderSquare />
             )}
         </ComboboxWrapper>
     );
