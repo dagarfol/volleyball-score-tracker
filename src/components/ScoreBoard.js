@@ -60,7 +60,9 @@ const ScoreNumber = styled.p`
 `;
 
 const SetsWonContainer = styled.div`
-  margin-top: 10px;
+display: flex;
+    flex-direction: column;
+    align-items: center;
 `;
 
 const SetsWonSelect = styled.select`
@@ -68,6 +70,7 @@ const SetsWonSelect = styled.select`
   padding: 5px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  width: fit-content;
 `;
 
 const ServingIndicator = styled.div`
@@ -133,13 +136,13 @@ function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPoss
               <ScoreAdjustButton disabled={!matchStarted} onClick={() => onAdjustScore('teamA', -1)}>-</ScoreAdjustButton>
             </ScoreAdjustContainer>
             <ScoreNumber>{scores.teamA}</ScoreNumber>
-          </ScoreNumberContainer>
           <SetsWonContainer>
-            Sets Won: 
+            Sets: 
             <SetsWonSelect disabled={!matchStarted} value={setsWon.teamA} onChange={(event) => handleSetsWonChange('teamA', event)}>
               {renderSetsWonOptions()}
             </SetsWonSelect>
           </SetsWonContainer>
+          </ScoreNumberContainer>
           {currentServer === 'teamA' && <ServingIndicator />}
         </TeamScoreA>
         <TeamScoreB isPossession={ballPossession === 'teamB'}>
@@ -148,18 +151,18 @@ function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPoss
             <span>{teams.teamB}</span>
           </TeamInfo>
           <ScoreNumberContainer>
+          <SetsWonContainer>
+            Sets: 
+            <SetsWonSelect disabled={!matchStarted} value={setsWon.teamB} onChange={(event) => handleSetsWonChange('teamB', event)}>
+              {renderSetsWonOptions()}
+            </SetsWonSelect>
+          </SetsWonContainer>
             <ScoreNumber>{scores.teamB}</ScoreNumber>
             <ScoreAdjustContainer>
               <ScoreAdjustButton disabled={!matchStarted} onClick={() => onAdjustScore('teamB', 1)}>+</ScoreAdjustButton>
               <ScoreAdjustButton disabled={!matchStarted} onClick={() => onAdjustScore('teamB', -1)}>-</ScoreAdjustButton>
             </ScoreAdjustContainer>
           </ScoreNumberContainer>
-          <SetsWonContainer>
-            Sets Won: 
-            <SetsWonSelect disabled={!matchStarted} value={setsWon.teamB} onChange={(event) => handleSetsWonChange('teamB', event)}>
-              {renderSetsWonOptions()}
-            </SetsWonSelect>
-          </SetsWonContainer>
           {currentServer === 'teamB' && <ServingIndicator />}
         </TeamScoreB>
       </ScoresContainer>

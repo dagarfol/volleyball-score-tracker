@@ -16,12 +16,20 @@ const UndoContainer = styled.div`
   align-items: center;
   margin-bottom: 10px;
 `;
-
-const PreviousActionText = styled.p`
+const PreviousActionTextContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+const PreviousActionLabel = styled.span`
   margin: 0;
   font-size: 0.9em;
   color: #555;
-  width: 45%;
+  font-weight: bold;
+`;
+const PreviousActionText = styled.span`
+  margin: 0;
+  font-size: 0.9em;
+  color: #555;
 `;
 
 const StyledButton = styled.button`
@@ -81,6 +89,18 @@ const initialState = {
   },
 };
 
+const actionLabels_sp = {
+  serve: 'Saque',
+  reception: 'Recepción',
+  attack: 'Ataque',
+  block: 'Bloqueo',
+  dig: 'Defensa',
+  continue: 'Continúa',
+  fault: 'Falta',
+  point: 'Punto',
+  error: 'Error',
+}
+
 function reducer(state, action) {
   switch (action.type) {
     case 'SET_POSSESSION':
@@ -124,7 +144,7 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
     dispatch({ type: 'SET_POSSESSION', payload: ballPossession });
   }, [ballPossession]);
 
-    useEffect(() => {
+  useEffect(() => {
     // Update initial possession whenever currentServer changes
     initialPossession.current = currentServer;
   }, [currentServer]);
@@ -316,20 +336,23 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
   };
 
   const renderPreviousActionText = () => {
-    if (state.actionHistory.length === 0) return 'No actions to undo';
+    if (state.actionHistory.length === 0) return 'Ninguna';
 
     const lastAction = state.actionHistory[state.actionHistory.length - 1];
     const { action, team } = lastAction;
     const teamName = teams[team] || team;
-    return `Previous action: ${action} by ${teamName}`;
+    return `${actionLabels_sp[action]} ${teamName}`;
   };
 
   return (
     <RallyControlContainer>
       <UndoContainer>
-        <PreviousActionText>{renderPreviousActionText()}</PreviousActionText>
-        <StyledButton onClick={handleUndo} disabled={state.actionHistory.length === 0}>Go Back</StyledButton>
-        <StyledButton onClick={handleDiscardRally} disabled={!currentServer}>Discard Rally</StyledButton>
+        <PreviousActionTextContainer>
+          <PreviousActionLabel>Acción anterior:</PreviousActionLabel>
+          <PreviousActionText>{renderPreviousActionText()}</PreviousActionText>
+        </PreviousActionTextContainer>
+        <StyledButton onClick={handleUndo} disabled={state.actionHistory.length === 0}>Deshacer acción</StyledButton>
+        <StyledButton onClick={handleDiscardRally} disabled={!currentServer}>Repetir punto</StyledButton>
       </UndoContainer>
       <FaultButtons teams={teams} currentServer={currentServer} handleAction={handleAction} />
       <ActionButtons
@@ -340,14 +363,14 @@ function RallyControl({ teams, currentServer, ballPossession, onRallyEnd, update
       />
       {state.showConfirmation && (
         <ConfirmationDialog
-          message="Confirm end of rally?"
+          message="¿Finalizar rally y asignar punto?"
           onConfirm={handleEndRally}
           onCancel={handleCancelConfirmation}
         />
       )}
       {state.showDiscardConfirmation && (
         <ConfirmationDialog
-          message="Are you sure you want to discard the entire rally?"
+          message="¿Seguro que desea descartar el rally y repetir el punto?"
           onConfirm={confirmDiscardRally}
           onCancel={() => dispatch({ type: 'TOGGLE_DISCARD_CONFIRMATION', payload: false })}
         />

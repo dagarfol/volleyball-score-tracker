@@ -61,22 +61,23 @@ const FixedButtonContainer = styled.div`
 
 function ActionButtons({ rallyStage, currentServer, currentPossession, handleAction }) {
   const actions = [];
-  const opposingTeam = currentPossession === 'teamA' ? 'teamB' : 'teamA';
+  const currentTeam = currentPossession === 'teamA' ? 'Equipo A' : 'Equipo B';
+  const opposingTeam = currentPossession === 'teamA' ? 'Equipo B' : 'Equipo A';
 
   if (rallyStage === 'start') {
-    actions.push({ label: `Serve ${currentPossession}`, action: 'serve' });
+    actions.push({ label: `Saque ${currentTeam}`, action: 'serve' });
   } else if (rallyStage === 'afterServe') {
-    actions.push({ label: `Reception ${opposingTeam}`, action: 'reception' });
+    actions.push({ label: `Recepcion ${opposingTeam}`, action: 'reception' });
   } else if (rallyStage === 'afterReception') {
-    actions.push({ label: `Attack ${currentPossession}`, action: 'attack' });
+    actions.push({ label: `Ataque ${currentTeam}`, action: 'attack' });
   } else if (rallyStage === 'afterAttack') {
-    actions.push({ label: `Block ${opposingTeam}`, action: 'block' });
-    actions.push({ label: `Dig ${opposingTeam}`, action: 'dig' });
+    actions.push({ label: `Bloqueo ${opposingTeam}`, action: 'block' });
+    actions.push({ label: `Defensa ${opposingTeam}`, action: 'dig' });
   } else if (rallyStage === 'afterBlock') {
-    actions.push({ label: `Dig ${opposingTeam}`, action: 'dig' });
-    actions.push({ label: `Continue ${currentPossession}`, action: 'continue' });
+    actions.push({ label: `Defensa ${opposingTeam}`, action: 'dig' });
+    actions.push({ label: `Continua ${currentTeam}`, action: 'continue' });
   } else if (rallyStage === 'afterDig') {
-    actions.push({ label: `Attack ${currentPossession}`, action: 'attack' });
+    actions.push({ label: `Ataque ${currentTeam}`, action: 'attack' });
   }
 
   const showErrorButton = ['afterServe', 'afterReception', 'afterAttack', 'afterBlock', 'afterDig'].includes(rallyStage);

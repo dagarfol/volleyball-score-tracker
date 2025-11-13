@@ -16,16 +16,16 @@ const Select = styled.select`
 
 const MatchSelector = ({ onSelectMatch }) => {
     const [competitionTypes, setCompetitionTypes] = useState([]);
-    const [competitions, setCompetitions] = useState([]);
-    const [categories, setCategories] = useState([]);
+    const [categories, setCompetitions] = useState([]);
+    const [divisions, setDivisions] = useState([]);
     const [phases, setPhases] = useState([]);
     const [groups, setGroups] = useState([]);
     const [matches, setMatches] = useState([]);
     const [rankingData, setRankingData] = useState([]);
 
     const [selectedCompetitionType, setSelectedCompetitionType] = useState('');
-    const [selectedCompetition, setSelectedCompetition] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedDivision, setSelectedDivision] = useState('');
     const [selectedPhase, setSelectedPhase] = useState('');
     const [selectedGroup, setSelectedGroup] = useState('');
     const [selectedMatch, setSelectedMatch] = useState(null);
@@ -53,7 +53,7 @@ const MatchSelector = ({ onSelectMatch }) => {
                     const data = await response.json();
                     setCompetitions(data.content);
                 } catch (error) {
-                    console.error('Error fetching competitions:', error);
+                    console.error('Error fetching categories:', error);
                 }
             };
 
@@ -62,26 +62,26 @@ const MatchSelector = ({ onSelectMatch }) => {
     }, [selectedCompetitionType]);
 
     useEffect(() => {
-        if (selectedCompetition) {
-            const fetchCategories = async () => {
+        if (selectedCategory) {
+            const fetchDivisions = async () => {
                 try {
-                    const response = await fetch(`https://intranet.fmvoley.com/api/competiciones/getCompeticionesTemporada?competicionId=${selectedCompetition}`);
+                    const response = await fetch(`https://intranet.fmvoley.com/api/competiciones/getCompeticionesTemporada?competicionId=${selectedCategory}`);
                     const data = await response.json();
-                    setCategories(data.content);
+                    setDivisions(data.content);
                 } catch (error) {
-                    console.error('Error fetching categories:', error);
+                    console.error('Error fetching divisions:', error);
                 }
             };
 
-            fetchCategories();
+            fetchDivisions();
         }
-    }, [selectedCompetition]);
+    }, [selectedCategory]);
 
     useEffect(() => {
-        if (selectedCategory) {
+        if (selectedDivision) {
             const fetchPhases = async () => {
                 try {
-                    const response = await fetch(`https://intranet.fmvoley.com/api/competiciones/getFasesCompeticion?competicionTemporadaId=${selectedCategory}`);
+                    const response = await fetch(`https://intranet.fmvoley.com/api/competiciones/getFasesCompeticion?competicionTemporadaId=${selectedDivision}`);
                     const data = await response.json();
                     setPhases(data.content);
                 } catch (error) {
@@ -91,7 +91,7 @@ const MatchSelector = ({ onSelectMatch }) => {
 
             fetchPhases();
         }
-    }, [selectedCategory]);
+    }, [selectedDivision]);
 
     useEffect(() => {
         if (selectedPhase) {
@@ -151,8 +151,8 @@ const MatchSelector = ({ onSelectMatch }) => {
     const handleMatchSelect = (selectedMatch) => {
         const teamAData = rankingData.find(team => team.nombre.trim() === selectedMatch.equipo_local.trim());
         const teamBData = rankingData.find(team => team.nombre.trim() === selectedMatch.equipo_visitante.trim());
-        const competition = competitions.find(type => type.id === selectedCompetition);
         const category = categories.find(type => type.id === selectedCategory);
+        const division = divisions.find(type => type.id === selectedDivision);
         const phase = phases.find(comp => comp.id === selectedPhase);
 
         const matchDetails = {
@@ -160,7 +160,7 @@ const MatchSelector = ({ onSelectMatch }) => {
             teamB: teamBData.nombre,
             teamALogo: teamAData.imagen,
             teamBLogo: teamBData.imagen,
-            matchHeader: `${competition.categoria_sexo} - ${category.nombre}`,
+            matchHeader: `${category.categoria_sexo} - ${division.nombre}`,
             extendedInfo: `Fase ${phase.nombre} - Jornada ${journeyData.numero}`,
             stadium: ` Pabellón ${selectedMatch.pabellon}`,
             //   competitionLogo: match.competitionLogo,
@@ -187,42 +187,42 @@ const MatchSelector = ({ onSelectMatch }) => {
     return (
         <MatchSelectorContainer>
             <Select value={selectedCompetitionType} onChange={(e) => setSelectedCompetitionType(e.target.value)}>
-                <option value="">Select Competition Type</option>
+                <option value="">Tipo de competición</option>
                 {competitionTypes.map(type => (
                     <option key={type.id} value={type.id}>{type.nombre}</option>
                 ))}
             </Select>
 
-            <Select value={selectedCompetition} onChange={(e) => setSelectedCompetition(e.target.value)} disabled={!selectedCompetitionType}>
-                <option value="">Select Competition</option>
-                {competitions.map(comp => (
-                    <option key={comp.id} value={comp.id}>{comp.nombre_comp}</option>
-                ))}
-            </Select>
-
-            <Select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} disabled={!selectedCompetition}>
-                <option value="">Select Category</option>
+            <Select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} disabled={!selectedCompetitionType}>
+                <option value="">Categoría</option>
                 {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.nombre}</option>
+                    <option key={cat.id} value={cat.id}>{cat.nombre_comp}</option>
                 ))}
             </Select>
 
-            <Select value={selectedPhase} onChange={(e) => setSelectedPhase(e.target.value)} disabled={!selectedCategory}>
-                <option value="">Select Phase</option>
+            <Select value={selectedDivision} onChange={(e) => setSelectedDivision(e.target.value)} disabled={!selectedCategory}>
+                <option value="">División</option>
+                {divisions.map(div => (
+                    <option key={div.id} value={div.id}>{div.nombre}</option>
+                ))}
+            </Select>
+
+            <Select value={selectedPhase} onChange={(e) => setSelectedPhase(e.target.value)} disabled={!selectedDivision}>
+                <option value="">Fase</option>
                 {phases.map(phase => (
                     <option key={phase.id} value={phase.id}>{phase.nombre}</option>
                 ))}
             </Select>
 
             <Select value={selectedGroup} onChange={(e) => setSelectedGroup(e.target.value)} disabled={!selectedPhase}>
-                <option value="">Select Group</option>
+                <option value="">Grupo</option>
                 {groups.map(group => (
                     <option key={group.id} value={group.id}>{group.nombre}</option>
                 ))}
             </Select>
 
             <Select value={selectedMatch?.id || ''} onChange={handleMatchDropdownChange} disabled={!selectedGroup}>
-                <option value="">Select Match</option>
+                <option value="">Partido</option>
                 {matches.map(match => (
                     <option key={match.id} value={match.id}>{match.equipo_local} vs {match.equipo_visitante}</option>
                 ))}

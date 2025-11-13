@@ -71,100 +71,104 @@ const Statistics = ({ teams, statistics }) => {
       <Table>
         <thead>
           <tr>
-            <TableHeader>Statistic</TableHeader>
+            <TableHeader>Estadísticas</TableHeader>
             <TableHeader>{teams.teamA}</TableHeader>
             <TableHeader>{teams.teamB}</TableHeader>
           </tr>
         </thead>
         <tbody>
           <TableRow>
-            <TableCell>Serves</TableCell>
+            <TableCell>Saques</TableCell>
             <TableCell>{statistics.teamA.serve}</TableCell>
             <TableCell>{statistics.teamB.serve}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Aces</TableCell>
+            <TableCell>Puntos directos de saque</TableCell>
             <TableCell>{statistics.teamA.ace}</TableCell>
             <TableCell>{statistics.teamB.ace}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Serve Errors</TableCell>
+            <TableCell>Errors de saque</TableCell>
             <TableCell>{statistics.teamA.serveError}</TableCell>
             <TableCell>{statistics.teamB.serveError}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Receptions</TableCell>
+            <TableCell>Recepciones</TableCell>
             <TableCell>{statistics.teamA.reception}</TableCell>
             <TableCell>{statistics.teamB.reception}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Reception Errors</TableCell>
+            <TableCell>Errores de recepcion</TableCell>
             <TableCell>{statistics.teamA.receptionError}</TableCell>
             <TableCell>{statistics.teamB.receptionError}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Digs</TableCell>
+            <TableCell>Defensas</TableCell>
             <TableCell>{statistics.teamA.dig}</TableCell>
             <TableCell>{statistics.teamB.dig}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Dig Errors</TableCell>
+            <TableCell>Errores de defensa</TableCell>
             <TableCell>{statistics.teamA.digError}</TableCell>
             <TableCell>{statistics.teamB.digError}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Attacks</TableCell>
+            <TableCell>Ataques</TableCell>
             <TableCell>{statistics.teamA.attack}</TableCell>
             <TableCell>{statistics.teamB.attack}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Attack Points</TableCell>
+            <TableCell>Puntos de ataque</TableCell>
             <TableCell>{statistics.teamA.attackPoint}</TableCell>
             <TableCell>{statistics.teamB.attackPoint}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Attack Errors</TableCell>
+            <TableCell>Errores de ataque</TableCell>
             <TableCell>{statistics.teamA.attackError}</TableCell>
             <TableCell>{statistics.teamB.attackError}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Blocks</TableCell>
+            <TableCell>Bloqueos</TableCell>
             <TableCell>{statistics.teamA.block}</TableCell>
             <TableCell>{statistics.teamB.block}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Block Points</TableCell>
+            <TableCell>Puntos de Bloqueo</TableCell>
             <TableCell>{statistics.teamA.blockPoint}</TableCell>
             <TableCell>{statistics.teamB.blockPoint}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Block Outs</TableCell>
+            <TableCell>Errores de Bloqueo</TableCell>
             <TableCell>{statistics.teamA.blockOut}</TableCell>
             <TableCell>{statistics.teamB.blockOut}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Faults</TableCell>
+            <TableCell>Faltas cometidas</TableCell>
             <TableCell>{statistics.teamA.fault}</TableCell>
             <TableCell>{statistics.teamB.fault}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Service Effectiveness</TableCell> {/* New calculated stat */}
-            {/* <TableCell>{serviceEffectivenessA}</TableCell>
-            <TableCell>{serviceEffectivenessB}</TableCell> */}
+            <TableCell>Total Errors</TableCell>
+            <TableCell>{statistics.teamA.selfErrors}</TableCell>
+            <TableCell>{statistics.teamB.selfErrors}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Service Effectiveness</TableCell>
             <TableCell>{statistics.teamA.serviceEffectiveness}</TableCell>
             <TableCell>{statistics.teamB.serviceEffectiveness}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Attack Effectiveness</TableCell> {/* New calculated stat */}
-            {/* <TableCell>{attackEffectivenessA}</TableCell>
-            <TableCell>{attackEffectivenessB}</TableCell> */}
+            <TableCell>Reception Effectiveness</TableCell>
+            <TableCell>{statistics.teamA.receptionEffectiveness}</TableCell>
+            <TableCell>{statistics.teamB.receptionEffectiveness}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Attack Effectiveness</TableCell>
             <TableCell>{statistics.teamA.attackEffectiveness}</TableCell>
             <TableCell>{statistics.teamB.attackEffectiveness}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Defense Effectiveness</TableCell> {/* New calculated stat */}
-            {/* <TableCell>{defenseEffectivenessA}</TableCell>
-            <TableCell>{defenseEffectivenessB}</TableCell> */}
+            <TableCell>Defense Effectiveness</TableCell>
             <TableCell>{statistics.teamA.defenseEffectiveness}</TableCell>
             <TableCell>{statistics.teamB.defenseEffectiveness}</TableCell>
           </TableRow>

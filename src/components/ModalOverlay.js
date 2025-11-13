@@ -39,7 +39,7 @@ const Modal = ({ children, onClose }) => {
   return (
     <ModalOverlay>
       <ModalContent>
-        <CloseButton onClick={onClose}>Close</CloseButton>
+        <CloseButton onClick={onClose}>Cerrar</CloseButton>
         {children}
       </ModalContent>
     </ModalOverlay>

@@ -37,7 +37,7 @@ function FaultButtons({ teams, currentServer, handleAction }) {
           onClick={() => handleAction('fault', team)}
           disabled={!currentServer}
         >
-          Fault {team}
+          Falta {team === 'teamA'? 'Equipo A' : 'Equipo B'}
         </FaultButton>
       ))}
     </FaultButtonContainer>

@@ -54,8 +54,10 @@ const calculateComputedStats = (updatedStats, team) => {
     [team]: {
       ...updatedStats[team],
       serviceEffectiveness: calculatePercentage(updatedStats[team].ace - updatedStats[team].serveError, updatedStats[team].serve),
+      receptionEffectiveness: calculatePercentage(updatedStats[team].reception - updatedStats[team].receptionError, updatedStats[opposingTeam].serve),
       attackEffectiveness: calculatePercentage(updatedStats[team].attackPoint - updatedStats[team].attackError, updatedStats[team].attack),
       defenseEffectiveness: calculatePercentage(updatedStats[team].dig - updatedStats[team].digError, updatedStats[opposingTeam].attack),
+      selfErrors: (updatedStats[team].serveError + updatedStats[team].receptionError + updatedStats[team].digError + updatedStats[team].attackError + updatedStats[team].blockOut + updatedStats[team].fault)|| 0,
     }
   })
 }
@@ -306,11 +308,11 @@ function Match({ matchDetails, matchData, setMatchData, socket }) {
   return (
     <MatchContainer>
       <div>
-        <TeamButton onClick={() => handleStartMatch()} disabled={localMatchData.matchStarted} >Start match</TeamButton>
+        <TeamButton onClick={() => handleStartMatch()} disabled={localMatchData.matchStarted} >Iniciar partido</TeamButton>
       </div>
       <div>
-        <TeamButton onClick={() => handleSetCurrentServer('teamA')} disabled={!localMatchData.matchStarted || rallyStage !== 'start'}>Team A Serves</TeamButton>
-        <TeamButton onClick={() => handleSetCurrentServer('teamB')} disabled={!localMatchData.matchStarted || rallyStage !== 'start'} >Team B Serves</TeamButton>
+        <TeamButton onClick={() => handleSetCurrentServer('teamA')} disabled={!localMatchData.matchStarted || rallyStage !== 'start'}>Saca Equipo A</TeamButton>
+        <TeamButton onClick={() => handleSetCurrentServer('teamB')} disabled={!localMatchData.matchStarted || rallyStage !== 'start'}>Saca Equipo B</TeamButton>
       </div>
 
       <ScoreBoard
@@ -330,13 +332,13 @@ function Match({ matchDetails, matchData, setMatchData, socket }) {
           onClick={() => handleTimeout('teamA')}
           disabled={!localMatchData.matchStarted || localMatchData.timeouts.teamA >= 2 || rallyStage !== 'start'}
         >
-          Team A Timeout ({localMatchData.timeouts.teamA}/2)
+          Tiempo Muerto (Equipo A)  ({localMatchData.timeouts.teamA}/2)
         </TimeoutButton>
         <TimeoutButton
           onClick={() => handleTimeout('teamB')}
           disabled={!localMatchData.matchStarted || localMatchData.timeouts.teamB >= 2 || rallyStage !== 'start'}
         >
-          Team B Timeout ({localMatchData.timeouts.teamB}/2)
+          Tiempo Muerto (Equipo B) ({localMatchData.timeouts.teamB}/2)
         </TimeoutButton>
       </TimeoutContainer>
 
@@ -352,7 +354,7 @@ function Match({ matchDetails, matchData, setMatchData, socket }) {
       />
       <Statistics teams={teams} statistics={localMatchData.statistics} />
       <div>
-        <h2>Set Scores</h2>
+        <h2>Marcadores por set</h2>
         {localMatchData.setScores.map((setScore, index) => (
           <p key={index}>Set {index + 1}: Team A {setScore.teamA} - Team B {setScore.teamB}</p>
         ))}

@@ -128,17 +128,17 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
   };
 
   const statFields = [
-    { label: 'Ranking', key: 'ranking' },
-    { label: 'Points', key: 'competitionPoints' },
-    { label: 'Matches Played', key: 'matchesPlayed' },
-    { label: 'Total Matches Won', key: 'totalMatchesWon' },
-    { label: 'Won 3 Points', key: 'won3Points' },
-    { label: 'Won 2 Points', key: 'won2Points' },
-    { label: 'Total Matches Lost', key: 'totalMatchesLost' },
-    { label: 'Lost 1 Point', key: 'lost1Point' },
-    { label: 'Lost 0 Points', key: 'lost0Points' },
-    { label: 'Total Points Scored', key: 'totalPointsScored' },
-    { label: 'Total Points Received', key: 'totalPointsReceived' },
+    { label: 'Posición', key: 'ranking' },
+    { label: 'Puntos', key: 'competitionPoints' },
+    { label: 'Partidos Jugados', key: 'matchesPlayed' },
+    { label: 'Total Ganados', key: 'totalMatchesWon' },
+    { label: 'Ganados 3 Puntos', key: 'won3Points' },
+    { label: 'Ganados 2 Puntos', key: 'won2Points' },
+    { label: 'Total Perdidos', key: 'totalMatchesLost' },
+    { label: 'Perdidos 1 Puntos', key: 'lost1Point' },
+    { label: 'Perdidos 0 Puntos', key: 'lost0Points' },
+    { label: 'Total Puntos Anotados', key: 'totalPointsScored' },
+    { label: 'Total Puntos Recibidos', key: 'totalPointsReceived' },
   ];
 
   const renderStatInputs = (team, stats) => (
@@ -158,8 +158,8 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
 
   return (
     <PreMatchContainer>
-      <h1>Pre-Match Setup</h1>
-      <SyncButton onClick={() => setIsModalOpen(true)}>Sync from FMV</SyncButton>
+      <h2>Datos del partido</h2>
+      <SyncButton onClick={() => setIsModalOpen(true)}>Obtener desde FMV</SyncButton>
       {isModalOpen && (
         <ModalOverlay onClose={() => setIsModalOpen(false)}>
           <MatchSelector onSelectMatch={handleSelectMatch} />
@@ -167,19 +167,19 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
       )}
       <Input
         type="text"
-        placeholder="Match Header"
+        placeholder="Cabecera de presentación del partido"
         value={matchHeader}
         onChange={(e) => setMatchHeader(e.target.value)}
       />
       <Input
         type="text"
-        placeholder="Extended Info"
+        placeholder="Información secundaria"
         value={extendedInfo}
         onChange={(e) => setExtendedInfo(e.target.value)}
       />
       <Input
         type="text"
-        placeholder="Stadium"
+        placeholder="Pabellón de juego"
         value={stadium}
         onChange={(e) => setStadium(e.target.value)}
       />
@@ -196,7 +196,7 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
       <ImageSelector>
         <Input
           type="text"
-          placeholder="Competition logo"
+          placeholder="Logo de la Competicion"
           value={competitionLogo}
           onChange={(e) => setCompetitionLogo(e.target.value)}
         />
@@ -204,22 +204,22 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
       </ImageSelector>
       <Input
         type="text"
-        placeholder="Team A Name"
+        placeholder="Nombre del Equipo A"
         value={teamA}
         onChange={(e) => setTeamA(e.target.value)}
       />
-      <CustomCombobox placeholderText={"Team A Logo URL"} inputValue={teamALogo} onInputChange={setTeamALogo} />
+      <CustomCombobox placeholderText={"URL del escudo del Equipo A"} inputValue={teamALogo} onInputChange={setTeamALogo} />
       <Input
         type="text"
-        placeholder="Team B Name"
+        placeholder="Nombre del Equipo B"
         value={teamB}
         onChange={(e) => setTeamB(e.target.value)}
       />
-      <CustomCombobox placeholderText={"Team B Logo URL"} inputValue={teamBLogo} onInputChange={setTeamBLogo} />
-      <h2>{teamA} Statistics (Team A)</h2>
+      <CustomCombobox placeholderText={"URL del escudo del Equipo B"} inputValue={teamBLogo} onInputChange={setTeamBLogo} />
+      <h2>{teamA} Estadísticas (Equipo A)</h2>
       {renderStatInputs('A', statsA)}
 
-      <h2>{teamB} Statistics (Team B)</h2>
+      <h2>{teamB} Estadísticas (Equipo B)</h2>
       {renderStatInputs('B', statsB)}
     </PreMatchContainer>
   );

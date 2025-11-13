@@ -129,8 +129,8 @@ const initialMatchDetails = {
     matchStarted: false,
     timeouts: { teamA: 0, teamB: 0 },
     statistics: {
-      teamA: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0, serviceEffectiveness: 0,attackEffectiveness: 0, defenseEffectiveness: 0 },
-      teamB: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0, serviceEffectiveness: 0,attackEffectiveness: 0, defenseEffectiveness: 0 },
+      teamA: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0, serviceEffectiveness: 0, receptionEffectiveness: 0,attackEffectiveness: 0, defenseEffectiveness: 0, selfErrors: 0 },
+      teamB: { serve: 0, ace: 0, serveError: 0, reception: 0, receptionError: 0, dig: 0, digError: 0, attack: 0, attackPoint: 0, attackError: 0, block: 0, blockPoint: 0, blockOut: 0, fault: 0, serviceEffectiveness: 0, receptionEffectiveness: 0,attackEffectiveness: 0, defenseEffectiveness: 0, selfErrors: 0 },
     },
     winner: null,
     matchEvent: {
@@ -203,20 +203,20 @@ function App() {
 
   return (
     <AppContainer>
-      <h2>Preview</h2>
+      <h2>Vista Previa</h2>
       <ResizablePreview src={overlayUrl} />
       <TabContainer>
         <TabButton active={activeTab === 'prematch'} onClick={() => setActiveTab('prematch')}>
-          Pre-Match Setup
+          Datos del partido
         </TabButton>
         <TabButton active={activeTab === 'match'} onClick={() => setActiveTab('match')}>
-          Match
+          Partido
         </TabButton>
         <TabButton active={activeTab === 'controls'} onClick={() => setActiveTab('controls')}>
-          Controls
+          Controles de vídeo
         </TabButton>
         <OpenLinkButton onClick={openOtherApp}>
-          Copy output URL
+          Copiar URL de overlay
         </OpenLinkButton>
       </TabContainer>
 
