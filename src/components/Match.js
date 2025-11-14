@@ -171,7 +171,7 @@ const matchReducer = (state, action) => {
       };
     case 'PROCESS_GAME_END': {
       const { maxSets, teams, setParentMatchDataCallback } = action;
-      const scoreDifference = Math.abs(state.scores.teamA - state.scores.teamB);
+      const scoreDifference = state.scores.teamA - state.scores.teamB;
       const isTiebreakerSet = state.setsWon.teamA + state.setsWon.teamB === maxSets - 1;
       const requiredPoints = isTiebreakerSet ? 15 : 25;
 
@@ -189,7 +189,7 @@ const matchReducer = (state, action) => {
       if (state.scores.teamA >= requiredPoints && scoreDifference >= 2) {
         newSetsWon.teamA += 1;
         setEnded = true;
-      } else if (state.scores.teamB >= requiredPoints && scoreDifference >= 2) {
+      } else if (state.scores.teamB >= requiredPoints && scoreDifference <= -2) {
         newSetsWon.teamB += 1;
         setEnded = true;
       }
