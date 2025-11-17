@@ -1,5 +1,22 @@
 // Controls.js
 import React from 'react';
+import styled from 'styled-components';
+
+const ControlsContainerDiv = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-content: stretch;
+    justify-content: center;
+    align-items: start;
+    position: relative;
+`;
+
+const ReloadButton = styled.button`
+    position: absolute;
+    top: 0;
+    right: 10%;
+`;
 
 const Controls = ({ config, setConfig, socket }) => {
 
@@ -26,9 +43,16 @@ const Controls = ({ config, setConfig, socket }) => {
         setConfig(updatedConfig);
         socket.emit('updateConfig', updatedConfig);
     };
+    const handleReloadOverlay = () => {
+        socket.emit('reload');
+    }
 
     return (
-        <div>
+        <ControlsContainerDiv>
+            <ReloadButton 
+                onClick={() => handleReloadOverlay()}>
+                Recargar overlay
+            </ReloadButton>
             <h2>Controles</h2>
             <div>
                 <h3>Marcador</h3>
@@ -81,7 +105,7 @@ const Controls = ({ config, setConfig, socket }) => {
                     {config.afterMatch.showStats ? 'Ocultar estadísticas' : 'Mostrar estadísticas'}
                 </button>
             </div>
-        </div>
+        </ControlsContainerDiv>
     );
 };
 

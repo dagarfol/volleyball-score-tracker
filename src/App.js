@@ -80,42 +80,42 @@ const initialConfig = {
 };
 
 const initialMatchDetails = {
-    teams: { teamA: 'CV Alcala Glauka Viajes', teamB: 'CVLEGANES.COM B' },
+    teams: { teamA: 'Equipo Local Demo', teamB: 'Equipo Visitante Demo' },
     teamLogos: {
-      teamA: 'https://www.todovoleibol.com/images/escudos/cv-alcala.jpg',
-      teamB: 'https://www.todovoleibol.com/images/escudos/cv-leganes.jpg'
+      teamA: 'logo192.png',
+      teamB: 'logo.svg'
     },
-    matchHeader: 'CADETE - 1ª División Aut. Preferente',
-    extendedInfo: 'Liga regular - Jornada 5',
-    stadium: 'Pabellón EMILIA PARDO BAZAN, Leganés',
-    competitionLogo: 'https://fmvoley.com/images/logo.svg',
+    matchHeader: 'CATEGORIA - Division',
+    extendedInfo: 'Fase - Jornada X',
+    stadium: 'Pabellón donde se juega, Ciudad',
+    competitionLogo: 'sample_logo.jpg',
     maxSets: 5,
     stats: {
       teamA: {
-        ranking: 9,
-        competitionPoints: 4,
-        matchesPlayed: 5,
-        totalMatchesWon: 1,
-        won3Points: 1,
-        won2Points: 0,
-        totalMatchesLost: 4,
-        lost1Point: 1,
-        lost0Points: 3,
-        totalPointsScored: 377,
-        totalPointsReceived: 408,
-      },
-      teamB: {
-        ranking: 12,
+        ranking: 0,
         competitionPoints: 0,
-        matchesPlayed: 5,
+        matchesPlayed: 0,
         totalMatchesWon: 0,
         won3Points: 0,
         won2Points: 0,
-        totalMatchesLost: 5,
+        totalMatchesLost: 0,
         lost1Point: 0,
-        lost0Points: 5,
-        totalPointsScored: 275,
-        totalPointsReceived: 397,
+        lost0Points: 0,
+        totalPointsScored: 0,
+        totalPointsReceived: 0,
+      },
+      teamB: {
+        ranking: 0,
+        competitionPoints: 0,
+        matchesPlayed: 0,
+        totalMatchesWon: 0,
+        won3Points: 0,
+        won2Points: 0,
+        totalMatchesLost: 0,
+        lost1Point: 0,
+        lost0Points: 0,
+        totalPointsScored: 0,
+        totalPointsReceived: 0,
       }
     },
   };
