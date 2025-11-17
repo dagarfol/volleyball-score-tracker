@@ -30,42 +30,7 @@ const TableCell = styled.td`
   border: 1px solid #ddd;
 `;
 
-// const calculatePercentage = (value, total) => {
-//   if (total === 0) return '0%';
-//   return `${((value / total) * 100).toFixed(2)}%`;
-// };
-
 const Statistics = ({ teams, statistics }) => {
-  // const serviceEffectivenessA = calculatePercentage(
-  //   statistics.teamA.ace - statistics.teamA.serveError,
-  //   statistics.teamA.serve
-  // );
-
-  // const serviceEffectivenessB = calculatePercentage(
-  //   statistics.teamB.ace - statistics.teamB.serveError,
-  //   statistics.teamB.serve
-  // );
-
-  // const attackEffectivenessA = calculatePercentage(
-  //   statistics.teamA.attackPoint - statistics.teamA.attackError,
-  //   statistics.teamA.attack
-  // );
-
-  // const attackEffectivenessB = calculatePercentage(
-  //   statistics.teamB.attackPoint - statistics.teamB.attackError,
-  //   statistics.teamB.attack
-  // );
-
-  // const defenseEffectivenessA = calculatePercentage(
-  //   statistics.teamA.dig - statistics.teamA.digError,
-  //   statistics.teamB.attack
-  // );
-
-  // const defenseEffectivenessB = calculatePercentage(
-  //   statistics.teamB.dig + statistics.teamB.reception - statistics.teamB.digError - statistics.teamB.receptionError,
-  //   statistics.teamA.attack
-  // );
-
   return (
     <StatisticsContainer>
       <Table>
@@ -88,7 +53,7 @@ const Statistics = ({ teams, statistics }) => {
             <TableCell>{statistics.teamB.ace}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Errors de saque</TableCell>
+            <TableCell>Errores de saque</TableCell>
             <TableCell>{statistics.teamA.serveError}</TableCell>
             <TableCell>{statistics.teamB.serveError}</TableCell>
           </TableRow>
@@ -128,7 +93,7 @@ const Statistics = ({ teams, statistics }) => {
             <TableCell>{statistics.teamB.attackError}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Bloqueos</TableCell>
+            <TableCell>Bloqueos intentados</TableCell>
             <TableCell>{statistics.teamA.block}</TableCell>
             <TableCell>{statistics.teamB.block}</TableCell>
           </TableRow>
@@ -148,27 +113,27 @@ const Statistics = ({ teams, statistics }) => {
             <TableCell>{statistics.teamB.fault}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Total Errors</TableCell>
+            <TableCell>Total errores cometidos</TableCell>
             <TableCell>{statistics.teamA.selfErrors}</TableCell>
             <TableCell>{statistics.teamB.selfErrors}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Service Effectiveness</TableCell>
+            <TableCell>Efectividad del servicio</TableCell>
             <TableCell>{statistics.teamA.serviceEffectiveness}</TableCell>
             <TableCell>{statistics.teamB.serviceEffectiveness}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Reception Effectiveness</TableCell>
+            <TableCell>Efectividad de la recepcion</TableCell>
             <TableCell>{statistics.teamA.receptionEffectiveness}</TableCell>
             <TableCell>{statistics.teamB.receptionEffectiveness}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Attack Effectiveness</TableCell>
+            <TableCell>Efectividad del ataque</TableCell>
             <TableCell>{statistics.teamA.attackEffectiveness}</TableCell>
             <TableCell>{statistics.teamB.attackEffectiveness}</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Defense Effectiveness</TableCell>
+            <TableCell>Efectividad de la defensa</TableCell>
             <TableCell>{statistics.teamA.defenseEffectiveness}</TableCell>
             <TableCell>{statistics.teamB.defenseEffectiveness}</TableCell>
           </TableRow>

@@ -61,23 +61,23 @@ const FixedButtonContainer = styled.div`
 
 function ActionButtons({ rallyStage, currentServer, currentPossession, handleAction }) {
   const actions = [];
-  const currentTeam = currentPossession === 'teamA' ? 'Equipo A' : 'Equipo B';
-  const opposingTeam = currentPossession === 'teamA' ? 'Equipo B' : 'Equipo A';
+  const currentTeamLbl = currentPossession === 'teamA' ? 'Equipo A' : 'Equipo B';
+  const opposingTeamLbl = currentPossession === 'teamA' ? 'Equipo B' : 'Equipo A';
 
   if (rallyStage === 'start') {
-    actions.push({ label: `Saque ${currentTeam}`, action: 'serve' });
+    actions.push({ label: `Saque ${currentTeamLbl}`, action: 'serve' });
   } else if (rallyStage === 'afterServe') {
-    actions.push({ label: `Recepcion ${opposingTeam}`, action: 'reception' });
+    actions.push({ label: `Recepcion ${opposingTeamLbl}`, action: 'reception' });
   } else if (rallyStage === 'afterReception') {
-    actions.push({ label: `Ataque ${currentTeam}`, action: 'attack' });
+    actions.push({ label: `Ataque ${currentTeamLbl}`, action: 'attack' });
   } else if (rallyStage === 'afterAttack') {
-    actions.push({ label: `Bloqueo ${opposingTeam}`, action: 'block' });
-    actions.push({ label: `Defensa ${opposingTeam}`, action: 'dig' });
+    actions.push({ label: `Bloqueo ${opposingTeamLbl}`, action: 'block' });
+    actions.push({ label: `Defensa ${opposingTeamLbl}`, action: 'dig' });
   } else if (rallyStage === 'afterBlock') {
-    actions.push({ label: `Defensa ${opposingTeam}`, action: 'dig' });
-    actions.push({ label: `Continua ${currentTeam}`, action: 'continue' });
+    actions.push({ label: `Defensa ${opposingTeamLbl}`, action: 'dig' });
+    actions.push({ label: `Continua ${currentTeamLbl}`, action: 'continue' });
   } else if (rallyStage === 'afterDig') {
-    actions.push({ label: `Ataque ${currentTeam}`, action: 'attack' });
+    actions.push({ label: `Ataque ${currentTeamLbl}`, action: 'attack' });
   }
 
   const showErrorButton = ['afterServe', 'afterReception', 'afterAttack', 'afterBlock', 'afterDig'].includes(rallyStage);
@@ -92,7 +92,7 @@ function ActionButtons({ rallyStage, currentServer, currentPossession, handleAct
           disabled={!currentServer}
           visible={showErrorButton}
         >
-          Error {currentPossession}
+          Error {currentTeamLbl}
         </ActionButton>
       </FixedButtonContainer>
       <InnerActionButtonContainer>
@@ -114,7 +114,7 @@ function ActionButtons({ rallyStage, currentServer, currentPossession, handleAct
           disabled={!currentServer}
           visible={showPointButton}
         >
-          Point {currentPossession}
+          Punto {currentTeamLbl}
         </ActionButton>
       </FixedButtonContainer>
     </ActionButtonContainer>
