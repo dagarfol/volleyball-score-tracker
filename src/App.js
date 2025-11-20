@@ -179,7 +179,7 @@ function App() {
     });
 
     socketInstance.on('connect', () => {
-      console.log('Socket.io connection established');
+      console.log(`Socket.io connection established - client id: ${socketInstance.id}`);
     });
 
     socketInstance.on('message', (data) => {

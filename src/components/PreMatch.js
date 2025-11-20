@@ -113,17 +113,18 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
     }
   };
 
-  const handleSelectMatch = (selectedMatch) => {
-    setTeamA(selectedMatch.teamA);
-    setTeamB(selectedMatch.teamB);
-    setTeamALogo(selectedMatch.teamALogo);
-    setTeamBLogo(selectedMatch.teamBLogo);
-    setMatchHeader(selectedMatch.matchHeader);
-    setStadium(selectedMatch.stadium);
-    setExtendedInfo(selectedMatch.extendedInfo);
-    setMaxSets(selectedMatch.maxSets);
-    setStatsA(selectedMatch.stats.teamA);
-    setStatsB(selectedMatch.stats.teamB);
+  const handleSelectMatch = (selectedMatchDetails) => {
+    setMatchHeader(selectedMatchDetails.matchHeader);
+    setStadium(selectedMatchDetails.stadium);
+    setExtendedInfo(selectedMatchDetails.extendedInfo);
+    setCompetitionLogo(selectedMatchDetails.competitionLogo)
+    setTeamA(selectedMatchDetails.teamA);
+    setTeamB(selectedMatchDetails.teamB);
+    setTeamALogo(selectedMatchDetails.teamALogo);
+    setTeamBLogo(selectedMatchDetails.teamBLogo);
+    setMaxSets(selectedMatchDetails.maxSets);
+    setStatsA(selectedMatchDetails.stats.teamA);
+    setStatsB(selectedMatchDetails.stats.teamB);
     setIsModalOpen(false); // Close the modal after selection
   };
 

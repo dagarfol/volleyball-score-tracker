@@ -162,8 +162,8 @@ const MatchSelector = ({ onSelectMatch }) => {
             teamBLogo: teamBData.imagen,
             matchHeader: `${category.categoria_sexo} - ${division.nombre}`,
             extendedInfo: `Fase ${phase.nombre} - Jornada ${journeyData.numero}`,
-            stadium: ` Pabellón ${selectedMatch.pabellon}`,
-            //   competitionLogo: match.competitionLogo,
+            stadium: `Pabellón ${selectedMatch.pabellon}`,
+            competitionLogo: 'https://fmvoley.com/images/logo.svg',
             maxSets: 5,
             stats: {
                 teamA: mapTeamDataToStats(teamAData),
