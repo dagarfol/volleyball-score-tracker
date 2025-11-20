@@ -105,6 +105,12 @@ const Controls = ({ config, setConfig, socket }) => {
                     {config.afterMatch.showStats ? 'Ocultar estadísticas' : 'Mostrar estadísticas'}
                 </button>
             </div>
+            <div>
+                <h3>Panel de patrocinadores</h3>
+                <button onClick={() => handleToggle('sponsors', 'enabled')}>
+                    {config.sponsors.enabled ? 'Ocultar' : 'Mostrar'}
+                </button>
+            </div>
         </ControlsContainerDiv>
     );
 };

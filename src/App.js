@@ -77,7 +77,18 @@ const initialConfig = {
     enabled: false,
     showStats: true,
   },
-};
+  sponsors: {
+    enabled: false,
+    imageUrls: [
+  // 'https://image.singular.live/63c1faa42c4533fdf366cc258ed847c5/images/2IhxI7aYt6kMejyz3Q6Vdf_w1953h551.png',
+  // 'https://image.singular.live/63c1faa42c4533fdf366cc258ed847c5/images/3SElrO9xWs8gXjxfMbcV7i_w2161h445.png',
+  // 'https://image.singular.live/63c1faa42c4533fdf366cc258ed847c5/images/1SBvSFDEg2nR1z0qMXI0kL_w755h242.png',
+  'sponsors-1.png',
+  'sponsors-2.png',
+  'sponsors-3.png',
+  // Añade más URLs según sea necesario
+],displayTime: 5000,
+  },};
 
 const initialMatchDetails = {
     teams: { teamA: 'Equipo Local Demo', teamB: 'Equipo Visitante Demo' },
