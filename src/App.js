@@ -32,13 +32,13 @@ const TabContainer = styled.div`
 const TabButton = styled.button`
   padding: 10px 20px;
   margin: 0 5px;
-  background-color: ${({ active }) => (active ? '#007bff' : '#ccc')};
+  background-color: ${({ $active }) => ($active ? '#007bff' : '#ccc')};
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   &:hover {
-    background-color: ${({ active }) => (active ? '#0056b3' : '#bbb')};
+    background-color: ${({ $active }) => ($active ? '#0056b3' : '#bbb')};
   }
 `;
 
@@ -135,8 +135,8 @@ const initialMatchDetails = {
     scores: { teamA: 0, teamB: 0 },
     setsWon: { teamA: 0, teamB: 0 },
     setScores: [],//{ teamA: 25, teamB: 0 },{ teamA: 25, teamB: 0 },],
-    currentServer: '',
-    ballPossession: '',
+    currentServer: null,
+    ballPossession: null,
     matchStarted: false,
     timeouts: { teamA: 0, teamB: 0 },
     statistics: {
@@ -217,13 +217,13 @@ function App() {
       <h2>Vista Previa</h2>
       <ResizablePreview src={overlayUrl} />
       <TabContainer>
-        <TabButton active={activeTab === 'prematch'} onClick={() => setActiveTab('prematch')}>
+        <TabButton $active={activeTab === 'prematch'} onClick={() => setActiveTab('prematch')}>
           Datos del partido
         </TabButton>
-        <TabButton active={activeTab === 'match'} onClick={() => setActiveTab('match')}>
+        <TabButton $active={activeTab === 'match'} onClick={() => setActiveTab('match')}>
           Partido
         </TabButton>
-        <TabButton active={activeTab === 'controls'} onClick={() => setActiveTab('controls')}>
+        <TabButton $active={activeTab === 'controls'} onClick={() => setActiveTab('controls')}>
           Controles de vídeo
         </TabButton>
         <OpenLinkButton onClick={openOtherApp}>

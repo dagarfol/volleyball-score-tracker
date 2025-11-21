@@ -24,7 +24,7 @@ const TeamScoreA = styled.div`
   padding: 10px;
   border-radius: 8px;
   position: relative;
-  border: ${({ isPossession }) => (isPossession ? '3px solid #32CD32' : 'none')}; /* Green border for possession */
+  border: ${({ $isPossession }) => ($isPossession ? '3px solid #32CD32' : 'none')}; /* Green border for possession */
   text-align: center;
 `;
 
@@ -44,7 +44,7 @@ const TeamScoreB = styled.div`
   padding: 10px;
   border-radius: 8px;
   position: relative;
-  border: ${({ isPossession }) => (isPossession ? '3px solid #32CD32' : 'none')}; /* Green border for possession */
+  border: ${({ $isPossession }) => ($isPossession ? '3px solid #32CD32' : 'none')}; /* Green border for possession */
   text-align: center;
 `;
 
@@ -125,7 +125,7 @@ function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPoss
   return (
     <ScoreBoardContainer>
       <ScoresContainer>
-        <TeamScoreA isPossession={ballPossession === 'teamA'}>
+        <TeamScoreA $isPossession={ballPossession === 'teamA'}>
           <TeamInfo>
             <TeamLogo src={teamLogos.teamA} alt={`${teams.teamA} logo`} />
             <span>{teams.teamA}</span>
@@ -145,7 +145,7 @@ function ScoreBoard({ teams, teamLogos, scores, setsWon, currentServer, ballPoss
           </ScoreNumberContainer>
           {currentServer === 'teamA' && <ServingIndicator />}
         </TeamScoreA>
-        <TeamScoreB isPossession={ballPossession === 'teamB'}>
+        <TeamScoreB $isPossession={ballPossession === 'teamB'}>
           <TeamInfo>
             <TeamLogo src={teamLogos.teamB} alt={`${teams.teamB} logo`} />
             <span>{teams.teamB}</span>

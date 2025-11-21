@@ -36,7 +36,7 @@ const ActionButton = styled.button`
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   font-size: 1em;
   opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
-  visibility: ${({ visible }) => (visible ? 'visible' : 'hidden')};
+  visibility: ${({ $visible }) => ($visible ? 'visible' : 'hidden')};
   border-radius: 5px;
   cursor: pointer;
   &:hover:enabled {   background-color: ${({ type }) => {
@@ -90,7 +90,7 @@ function ActionButtons({ rallyStage, currentServer, currentPossession, handleAct
           type="error"
           onClick={() => handleAction('error')}
           disabled={!currentServer}
-          visible={showErrorButton}
+          $visible={showErrorButton}
         >
           Error {currentTeamLbl}
         </ActionButton>
@@ -101,7 +101,7 @@ function ActionButtons({ rallyStage, currentServer, currentPossession, handleAct
           key={action}
           onClick={() => handleAction(action)}
           disabled={!currentServer}
-          visible={true}
+          $visible={true}
         >
           {label}
         </ActionButton>
@@ -112,7 +112,7 @@ function ActionButtons({ rallyStage, currentServer, currentPossession, handleAct
           type="point"
           onClick={() => handleAction('point')}
           disabled={!currentServer}
-          visible={showPointButton}
+          $visible={showPointButton}
         >
           Punto {currentTeamLbl}
         </ActionButton>

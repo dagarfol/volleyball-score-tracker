@@ -181,7 +181,6 @@ const matchReducer = (state, action) => {
       let setEnded = false;
       const newSetScores = [...state.setScores, { teamA: state.scores.teamA, teamB: state.scores.teamB }];
 
-      // let matchWinner = {...};
       if (state.winner) {
         return state;
       }
@@ -208,24 +207,24 @@ const matchReducer = (state, action) => {
           ...state,
           // scores: newScores,
           setsWon: newSetsWon,
-          setScores: newSetScores, // Update setScores with the scores of the completed set
-          matchStarted: false, // disable action buttons
-          timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts at the start of a new set
+          setScores: newSetScores,
+          matchStarted: false,
+          timeouts: { teamA: 0, teamB: 0 },
           winner,
           currentServer: null,
           ballPossession: null,
         };
-        setParentMatchDataCallback(newState); // Sync with parent state
+        setParentMatchDataCallback(newState);
         return newState;
       } else if (setEnded) {
         const newState = {
           ...state,
           scores: newScores,
           setsWon: newSetsWon,
-          setScores: newSetScores, // Update setScores with the scores of the completed set
-          timeouts: { teamA: 0, teamB: 0 }, // Reset timeouts at the start of a new set
+          setScores: newSetScores,
+          timeouts: { teamA: 0, teamB: 0 },
         };
-        setParentMatchDataCallback(newState); // Sync with parent state
+        setParentMatchDataCallback(newState);
         return newState;
       } else {
         setParentMatchDataCallback(state);
