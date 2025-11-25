@@ -30,115 +30,51 @@ const TableCell = styled.td`
   border: 1px solid #ddd;
 `;
 
+const stats = [
+    { label: "Saques", key: "serve" },
+    { label: "Puntos directos de saque", key: "ace" },
+    { label: "Errores de saque", key: "serveError" },
+    { label: "Recepciones", key: "reception" },
+    { label: "Errores de recepcion", key: "receptionError" },
+    { label: "Defensas", key: "dig" },
+    { label: "Errores de defensa", key: "digError" },
+    { label: "Ataques", key: "attack" },
+    { label: "Puntos de ataque", key: "attackPoint" },
+    { label: "Errores de ataque", key: "attackError" },
+    { label: "Bloqueos intentados", key: "block" },
+    { label: "Puntos de Bloqueo", key: "blockPoint" },
+    { label: "Errores de Bloqueo", key: "blockError" },
+    { label: "Faltas cometidas", key: "fault" },
+    { label: "Total errores cometidos", key: "selfError" },
+    { label: "Efectividad del servicio", key: "serviceEffectiveness" },
+    { label: "Efectividad del ataque", key: "attackEffectiveness" },
+    { label: "Efectividad de la defensa", key: "defenseEffectiveness" },
+];
+
 const Statistics = ({ teams, statistics }) => {
   return (
     <StatisticsContainer>
-      <Table>
-        <thead>
-          <tr>
-            <TableHeader>Estadísticas</TableHeader>
-            <TableHeader>{teams.teamA}</TableHeader>
-            <TableHeader>{teams.teamB}</TableHeader>
-          </tr>
-        </thead>
-        <tbody>
-          <TableRow>
-            <TableCell>Saques</TableCell>
-            <TableCell>{statistics.teamA.serve}</TableCell>
-            <TableCell>{statistics.teamB.serve}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Puntos directos de saque</TableCell>
-            <TableCell>{statistics.teamA.ace}</TableCell>
-            <TableCell>{statistics.teamB.ace}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Errores de saque</TableCell>
-            <TableCell>{statistics.teamA.serveError}</TableCell>
-            <TableCell>{statistics.teamB.serveError}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Recepciones</TableCell>
-            <TableCell>{statistics.teamA.reception}</TableCell>
-            <TableCell>{statistics.teamB.reception}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Errores de recepcion</TableCell>
-            <TableCell>{statistics.teamA.receptionError}</TableCell>
-            <TableCell>{statistics.teamB.receptionError}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Defensas</TableCell>
-            <TableCell>{statistics.teamA.dig}</TableCell>
-            <TableCell>{statistics.teamB.dig}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Errores de defensa</TableCell>
-            <TableCell>{statistics.teamA.digError}</TableCell>
-            <TableCell>{statistics.teamB.digError}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Ataques</TableCell>
-            <TableCell>{statistics.teamA.attack}</TableCell>
-            <TableCell>{statistics.teamB.attack}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Puntos de ataque</TableCell>
-            <TableCell>{statistics.teamA.attackPoint}</TableCell>
-            <TableCell>{statistics.teamB.attackPoint}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Errores de ataque</TableCell>
-            <TableCell>{statistics.teamA.attackError}</TableCell>
-            <TableCell>{statistics.teamB.attackError}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Bloqueos intentados</TableCell>
-            <TableCell>{statistics.teamA.block}</TableCell>
-            <TableCell>{statistics.teamB.block}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Puntos de Bloqueo</TableCell>
-            <TableCell>{statistics.teamA.blockPoint}</TableCell>
-            <TableCell>{statistics.teamB.blockPoint}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Errores de Bloqueo</TableCell>
-            <TableCell>{statistics.teamA.blockOut}</TableCell>
-            <TableCell>{statistics.teamB.blockOut}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Faltas cometidas</TableCell>
-            <TableCell>{statistics.teamA.fault}</TableCell>
-            <TableCell>{statistics.teamB.fault}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Total errores cometidos</TableCell>
-            <TableCell>{statistics.teamA.selfErrors}</TableCell>
-            <TableCell>{statistics.teamB.selfErrors}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Efectividad del servicio</TableCell>
-            <TableCell>{statistics.teamA.serviceEffectiveness}</TableCell>
-            <TableCell>{statistics.teamB.serviceEffectiveness}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Efectividad de la recepcion</TableCell>
-            <TableCell>{statistics.teamA.receptionEffectiveness}</TableCell>
-            <TableCell>{statistics.teamB.receptionEffectiveness}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Efectividad del ataque</TableCell>
-            <TableCell>{statistics.teamA.attackEffectiveness}</TableCell>
-            <TableCell>{statistics.teamB.attackEffectiveness}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Efectividad de la defensa</TableCell>
-            <TableCell>{statistics.teamA.defenseEffectiveness}</TableCell>
-            <TableCell>{statistics.teamB.defenseEffectiveness}</TableCell>
-          </TableRow>
-        </tbody>
-      </Table>
+      <div id="statistics-table">
+        <Table>
+          <thead>
+            <tr>
+              <TableHeader>Estadísticas</TableHeader>
+              <TableHeader>{teams.teamA}</TableHeader>
+              <TableHeader>{teams.teamB}</TableHeader>
+            </tr>
+          </thead>
+          <tbody>
+
+            {stats.map((stat, index) => (
+                        <TableRow key={index}>
+                            <TableCell>{stat.label}</TableCell>
+                            <TableCell>{statistics.teamA[stat.key]}</TableCell>
+                            <TableCell>{statistics.teamB[stat.key]}</TableCell>
+                        </TableRow>
+                    ))}
+          </tbody>
+        </Table>
+      </div>
     </StatisticsContainer>
   );
 };
