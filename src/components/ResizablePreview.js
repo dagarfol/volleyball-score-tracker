@@ -6,7 +6,8 @@ import 'react-resizable/css/styles.css';
 
 // Styled components for the resizable box and iframe
 const PreviewContainer = styled.div`
-  padding: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
 `;
 
 const IframeWrapper = styled.div`
@@ -24,7 +25,7 @@ const NATIVE_WIDTH = 1280;
 const NATIVE_HEIGHT = 720;
 
 const ResizablePreview = ({ src }) => {
-  const [size, setSize] = useState({ width: 426, height: 240 });
+  const [size, setSize] = useState({ width: 400, height: 225 });
   const scale = size.width / NATIVE_WIDTH;
 
   const onResize = (event, { size }) => {
