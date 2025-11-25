@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import ScoreBoard from './ScoreBoard';
 import RallyControl from './RallyControl';
 import Statistics from './Statistics';
+import MatchReport from './MatchReport';																	
 
 // --- Styled Components ---
 
@@ -351,6 +352,7 @@ function Match({ matchDetails, matchData, setMatchData, socket }) {
         onSetCurrentServer={handleSetCurrentServer}
         onRallyStageChange={handleRallyStageChange}
       />
+	  <MatchReport teams={teams} statistics={localMatchData.statistics} setScores={localMatchData.setScores} />
       <Statistics teams={teams} statistics={localMatchData.statistics} />
       <div>
         <h2>Marcadores por set</h2>
