@@ -15,8 +15,8 @@ const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
   max-width: 600px;
+  min-width: 400px;
   margin: auto;
   background-color: #f9f9f9;
   border-radius: 8px;
@@ -43,7 +43,7 @@ const TabButton = styled.button`
 `;
 
 const OpenLinkButton = styled.button`
-  margin-top: 20px;
+  margin: 0 5px;
   padding: 10px 20px;
   background-color: #4CAF50;
   color: white;
@@ -80,9 +80,6 @@ const initialConfig = {
   sponsors: {
     enabled: false,
     imageUrls: [
-  // 'https://image.singular.live/63c1faa42c4533fdf366cc258ed847c5/images/2IhxI7aYt6kMejyz3Q6Vdf_w1953h551.png',
-  // 'https://image.singular.live/63c1faa42c4533fdf366cc258ed847c5/images/3SElrO9xWs8gXjxfMbcV7i_w2161h445.png',
-  // 'https://image.singular.live/63c1faa42c4533fdf366cc258ed847c5/images/1SBvSFDEg2nR1z0qMXI0kL_w755h242.png',
   'sponsors-1.png',
   'sponsors-2.png',
   'sponsors-3.png',
@@ -214,7 +211,7 @@ function App() {
 
   return (
     <AppContainer>
-      <h2>Vista Previa</h2>
+      <h2 style={{ margin: "0px"}}>Vista Previa</h2>
       <ResizablePreview src={overlayUrl} />
       <TabContainer>
         <TabButton $active={activeTab === 'prematch'} onClick={() => setActiveTab('prematch')}>

@@ -50,7 +50,7 @@ const Select = styled.select`
 
 const StatInputs = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: auto auto auto;
   gap: 10px;
   width: 100%;
   margin-top: 15px;
@@ -58,7 +58,10 @@ const StatInputs = styled.div`
 
 const StatInput = styled.input`
   padding: 8px;
-  width: 100%;
+  width: 80%;
+`;
+const StatLabel = styled.label`
+  text-align: center;
 `;
 
 function PreMatch({ setMatchDetails, matchDetails, socket }) {
@@ -125,7 +128,7 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
     setMaxSets(selectedMatchDetails.maxSets);
     setStatsA(selectedMatchDetails.stats.teamA);
     setStatsB(selectedMatchDetails.stats.teamB);
-    setIsModalOpen(false); // Close the modal after selection
+    setIsModalOpen(false);
   };
 
   const statFields = [
@@ -142,15 +145,23 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
     { label: 'Total Puntos Recibidos', key: 'totalPointsReceived' },
   ];
 
-  const renderStatInputs = (team, stats) => (
+  const renderStatInputs = (statsA, statsB) => (
     <StatInputs>
-      {statFields.map(field => (
-        <React.Fragment key={field.key}>
-          <label>{field.label}</label>
+      <StatLabel>{teamA}</StatLabel>
+      <StatLabel> - </StatLabel>
+      <StatLabel>{teamB}</StatLabel>
+      {statFields.map(stat => (
+        <React.Fragment key={stat.key}>
           <StatInput
             type="number"
-            value={stats[field.key]}
-            onChange={(e) => handleStatChange(team, field.key, e.target.value)}
+            value={statsA[stat.key]}
+            onChange={(e) => handleStatChange('A', stat.key, e.target.value)}
+          />
+          <StatLabel>{stat.label}</StatLabel>
+          <StatInput
+            type="number"
+            value={statsB[stat.key]}
+            onChange={(e) => handleStatChange('B', stat.key, e.target.value)}
           />
         </React.Fragment>
       ))}
@@ -159,7 +170,6 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
 
   return (
     <PreMatchContainer>
-      <h2>Datos del partido</h2>
       <SyncButton onClick={() => setIsModalOpen(true)}>Obtener desde FMV</SyncButton>
       {isModalOpen && (
         <ModalOverlay onClose={() => setIsModalOpen(false)}>
@@ -217,11 +227,10 @@ function PreMatch({ setMatchDetails, matchDetails, socket }) {
         onChange={(e) => setTeamB(e.target.value)}
       />
       <CustomCombobox placeholderText={"URL del escudo del Equipo B"} inputValue={teamBLogo} onInputChange={setTeamBLogo} />
-      <h2>{teamA} Estadísticas (Equipo A)</h2>
-      {renderStatInputs('A', statsA)}
 
-      <h2>{teamB} Estadísticas (Equipo B)</h2>
-      {renderStatInputs('B', statsB)}
+      <h2>Comparativa</h2>
+      {renderStatInputs(statsA, statsB)}
+
     </PreMatchContainer>
   );
 }

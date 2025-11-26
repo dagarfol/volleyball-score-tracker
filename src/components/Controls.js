@@ -10,6 +10,8 @@ const ControlsContainerDiv = styled.div`
     justify-content: center;
     align-items: start;
     position: relative;
+    box-sizing: border-box;
+    padding: 20px;
 `;
 
 const ReloadButton = styled.button`
@@ -53,7 +55,6 @@ const Controls = ({ config, setConfig, socket }) => {
                 onClick={() => handleReloadOverlay()}>
                 Recargar overlay
             </ReloadButton>
-            <h2>Controles</h2>
             <div>
                 <h3>Marcador</h3>
                 <button onClick={() => handleToggle('scoreboard', 'enabled')}>

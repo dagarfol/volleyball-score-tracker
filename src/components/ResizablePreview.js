@@ -6,8 +6,8 @@ import 'react-resizable/css/styles.css';
 
 // Styled components for the resizable box and iframe
 const PreviewContainer = styled.div`
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 `;
 
 const IframeWrapper = styled.div`
