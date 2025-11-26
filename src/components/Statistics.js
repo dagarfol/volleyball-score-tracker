@@ -45,7 +45,7 @@ const stats = [
     { label: "Puntos de Bloqueo", key: "blockPoint" },
     { label: "Errores de Bloqueo", key: "blockOut" },
     { label: "Faltas cometidas", key: "fault" },
-    { label: "Total errores cometidos", key: "selfError" },
+    { label: "Total errores cometidos", key: "selfErrors" },
     { label: "Efectividad del servicio", key: "serviceEffectiveness" },
     { label: "Efectividad del ataque", key: "attackEffectiveness" },
     { label: "Efectividad de la defensa", key: "defenseEffectiveness" },

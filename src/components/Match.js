@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import ScoreBoard from './ScoreBoard';
 import RallyControl from './RallyControl';
 import Statistics from './Statistics';
-import MatchReport from './MatchReport';																	
+import MatchReport from './MatchReport';
+import MatchExcel from './MatchExcel';
 
 // --- Styled Components ---
 
@@ -42,6 +43,14 @@ const TimeoutButton = styled.button`
   &:disabled { opacity: 0.6; cursor: not-allowed; }
   &:hover:enabled { background-color: #e68900; }
 `;
+
+const DownloadsContainer = styled.div`
+display: flex;
+    align-items: end;
+    justify-content: end;
+    width: 100%;
+    padding-top: 20px;
+`;
 // --- Helper Functions ---
 const calculatePercentage = (value, total) => {
   if (total === 0) return '0%';
@@ -58,7 +67,7 @@ const calculateComputedStats = (updatedStats, team) => {
       receptionEffectiveness: calculatePercentage(updatedStats[team].reception - updatedStats[team].receptionError, updatedStats[opposingTeam].serve),
       attackEffectiveness: calculatePercentage(updatedStats[team].attackPoint - updatedStats[team].attackError, updatedStats[team].attack),
       defenseEffectiveness: calculatePercentage(updatedStats[team].dig - updatedStats[team].digError, updatedStats[opposingTeam].attack),
-      selfErrors: (updatedStats[team].serveError + updatedStats[team].receptionError + updatedStats[team].digError + updatedStats[team].attackError + updatedStats[team].blockOut + updatedStats[team].fault)|| 0,
+      selfErrors: (updatedStats[team].serveError + updatedStats[team].receptionError + updatedStats[team].digError + updatedStats[team].attackError + updatedStats[team].blockOut + updatedStats[team].fault) || 0,
     }
   })
 }
@@ -352,10 +361,13 @@ function Match({ matchDetails, matchData, setMatchData, socket }) {
         onSetCurrentServer={handleSetCurrentServer}
         onRallyStageChange={handleRallyStageChange}
       />
-	  <MatchReport teams={teams} statistics={localMatchData.statistics} setScores={localMatchData.setScores} />
+      <DownloadsContainer>
+        <MatchReport teams={teams} statistics={localMatchData.statistics} setScores={localMatchData.setScores} />
+        <MatchExcel teams={teams} statistics={localMatchData.statistics} setScores={localMatchData.setScores} />
+      </DownloadsContainer>
       <Statistics teams={teams} statistics={localMatchData.statistics} />
       <div>
-        <h2>Marcadores por set</h2>
+        <h3>Marcadores por set</h3>
         {localMatchData.setScores.map((setScore, index) => (
           <p key={index}>Set {index + 1}: Team A {setScore.teamA} - Team B {setScore.teamB}</p>
         ))}

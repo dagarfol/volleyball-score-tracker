@@ -6,7 +6,7 @@ import FaultButtons from './FaultButtons';
 
 const RallyControlContainer = styled.div`
   width: 100%;
-  margin-top: 20px;
+  margin: 20px 0px;
   position: relative;
 `;
 
